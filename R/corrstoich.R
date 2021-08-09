@@ -152,13 +152,31 @@ correct_diet <- function(usin,dietlimits = c(NA)){
 
 }
 
-#' A function that corrects trophic species production efficiency and/or diet composition to balance carbon and nitrogen demands.
+#' Correct stoichiometry
 #'
 #' @param usin # Community in which to correct stoichiometry.
 #' @param forceProd Boolean: Should we force organisms to only change their production efficiency and not their diet?
 #' @param dietlimits A matrix the same size as imat that gives the diet limits as a proportion of the total diet. All values must be between 0 and 1. Leaving it as NA sets the limits of all diet items to 1.
 #' @param Immobilizationlimit Set a limit for the maximum rate of immobilization of inorganic nitrogen for the food web per time step.
+#' @details
+#' A function that corrects trophic species production efficiency and/or diet composition to balance carbon and nitrogen demands.
 #' @return The modified community with new production efficiencies and diets.
+#' @examples
+#' corrstoich(intro_comm)
+#' # To force the correction to modify production efficiency only.
+#'
+#' corrstoich(intro_comm, forceProd = TRUE)
+#'
+#' # Set limits on the composition of the animal diet
+#' DL = intro_comm$imat # copy over the feeding matrix to use for the diet limits.
+#' # Oribatid 1 can only have up to 20% of its diet from each fungal species
+#' DL["Orib1",] = c(0,0,0,0.2,0.2,1,1)
+#' # Oribatid 2 can only have up to 10% of its diet from fungi 1
+#' DL["Orib2",] = c(0,0,0,0.1,1,1,1)
+#'
+#' # Run them with the limits:
+#' corrstoich(intro_comm, dietlimits = DL)
+#' @export
 corrstoich <- function(usin,
                        forceProd = F,
                        dietlimits = c(NA),

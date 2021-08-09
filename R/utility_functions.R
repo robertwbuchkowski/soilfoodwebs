@@ -3,6 +3,8 @@
 #' @param W A matrix of trophic species. Rows eat columns.
 #' @return A vector of trophic level assignments. The base of the food chain is 0.
 #' @export
+#' @examples
+#' TLcheddar(intro_comm$imat)
 TLcheddar <- function(W){
   # Make each row sum to one.
   rs <- rowSums(W)
@@ -37,6 +39,8 @@ TLcheddar <- function(W){
 #'
 #' @param usin The community to be sorted.
 #' @return The community returned after sorting
+#' @examples
+#' TLsort(intro_comm)
 #' @export
 TLsort <- function(usin){
 
@@ -116,6 +120,10 @@ TLsort <- function(usin){
 #'
 #' @param usin The community in which to identify cannibalism and mutual feeding
 #' @return The community with mutual feeding added to the properties database.
+#' @examples
+#' intro_comm_mod = intro_comm
+#' intro_comm_mod$imat["Predator", "Predator"] = 1
+#' can_mutfeed(intro_comm_mod)
 #' @export
 can_mutfeed <- function(usin){
   imat = usin$imat # row values of imat sets predator feeding preferences!
@@ -141,6 +149,8 @@ can_mutfeed <- function(usin){
 #'
 #' @param usin The community on which nitrogen calculations are made.
 #' @return A matrix of nitrogen surpluses or deficits.
+#' @examples
+#' Aijfcn(intro_comm)
 #' @export
 Aijfcn <- function(usin){
   tt = comana(usin, shuffleTL = F)
@@ -160,6 +170,8 @@ Aijfcn <- function(usin){
 #' @param shuffleTL A Boolean stating whether the community should be sorted before consumption rates are calculated.
 #' @param rmzeros A Boolean determining whether trophic species with zero biomass should be removed from the community.
 #' @return A matrix of consumption rates with units set by the the biomass input units in biomass and time.
+#' @examples
+#' Cijfcn(intro_comm)
 #' @export
 Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires the community inputs
 
@@ -184,8 +196,10 @@ Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires t
 #' @param shuffleTL A Boolean stating whether the community should be sorted.
 #' @param rmzeros A Boolean determining whether trophic species with zero biomass should be removed from the community.
 #' @return The checked community.
+#' @examples
+#' checkcomm(intro_comm)
 #' @export
-checkcomm <- function(usin, shuffleTL, rmzeros){
+checkcomm <- function(usin, shuffleTL = F, rmzeros = T){
 
   # Remove zeros from the community
   if(rmzeros & any(usin$prop$B == 0)){
@@ -252,6 +266,8 @@ RESCALE <- function(invec, a = 0, b = 1){
 #' @param COMM The community from which to remove nodes.
 #' @param toremove A vector of nodes to remove using their names.
 #' @return The community without the removed nodes.
+#' @examples
+#' removenodes(intro_comm, c("Predator"))
 #' @export
 removenodes <- function(COMM, toremove){
   whichtorm = !(COMM$prop$ID %in% toremove)

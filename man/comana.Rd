@@ -62,3 +62,6 @@ A list of consumption rates, carbon mineralization, nitrogen mineralization, car
 \description{
 A function to calculate carbon and nitrogen fluxes in the food web.
 }
+\examples{
+comana(intro_comm)
+}

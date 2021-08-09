@@ -4,8 +4,7 @@ Title: Soil Food Web Analysis
 Version: 0.1.0
 Author: Robert W. Buchkowski
 Maintainer: Robert W. Buchkowski <robert.buchkowski@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: A package for analyzing soil food webs or any food web. The package analyzes them at equilibirum by calculating fluxes and stability properties. It can also simulate them away from equilibrium and calculate loop weights.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -15,4 +14,10 @@ Imports:
   diagram (>= 1.6.5),
   graphics (>= 4.1.0),
   quadprog (>= 1.5-8),
-  lpSolve (>= 5.6.15)
+  lpSolve (>= 5.6.15),
+  rootSolve (>= 1.8.2.2),
+  deSolve (>= 1.28),
+  rlang (>= 0.4.11),
+  utils (>= 4.1.0)
+Depends: 
+    R (>= 2.10)

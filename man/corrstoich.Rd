@@ -2,7 +2,7 @@
 % Please edit documentation in R/corrstoich.R
 \name{corrstoich}
 \alias{corrstoich}
-\title{A function that corrects trophic species production efficiency and/or diet composition to balance carbon and nitrogen demands.}
+\title{Correct stoichiometry}
 \usage{
 corrstoich(usin, forceProd = F, dietlimits = c(NA), Immobilizationlimit = Inf)
 }
@@ -19,5 +19,24 @@ corrstoich(usin, forceProd = F, dietlimits = c(NA), Immobilizationlimit = Inf)
 The modified community with new production efficiencies and diets.
 }
 \description{
+Correct stoichiometry
+}
+\details{
 A function that corrects trophic species production efficiency and/or diet composition to balance carbon and nitrogen demands.
+}
+\examples{
+corrstoich(intro_comm)
+# To force the correction to modify production efficiency only.
+
+corrstoich(intro_comm, forceProd = TRUE)
+
+# Set limits on the composition of the animal diet
+DL = intro_comm$imat # copy over the feeding matrix to use for the diet limits.
+# Oribatid 1 can only have up to 20\% of its diet from each fungal species
+DL["Orib1",] = c(0,0,0,0.2,0.2,1,1)
+# Oribatid 2 can only have up to 10\% of its diet from fungi 1
+DL["Orib2",] = c(0,0,0,0.1,1,1,1)
+
+# Run them with the limits:
+corrstoich(intro_comm, dietlimits = DL)
 }

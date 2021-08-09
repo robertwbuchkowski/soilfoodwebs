@@ -17,6 +17,9 @@
 #' @param arrowsizerange The range of arrow sizes in the food web plot.
 #' @param rmzeros A Boolean determining whether trophic species with zero biomass should be removed from the community before analysis.
 #' @return A list of consumption rates, carbon mineralization, nitrogen mineralization, carbon and nitrogen consumption rates, and the modified community if zeros where removed or sorting occurred.
+#' @examples
+#' comana(intro_comm)
+#' @export
 
 comana <- function(usin,
                    mkplot = F,
