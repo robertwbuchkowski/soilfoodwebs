@@ -282,3 +282,56 @@ removenodes <- function(COMM, toremove){
 
   return(COMM)
 }
+
+#' Add node to the community
+#'
+#' @param COMM The community to which to add nodes.
+#' @param newname The new node ID.
+#' @param prey A vector of prey preferences with names.
+#' @param predator A vector of predators and their preferences with name.
+#' @param newprops A vector of the new properties with the appropriate names.
+#' @return The community with the new node.
+#' @seealso \code{\link{removenodes}}
+#' @export
+newnode <- function(COMM, newname, prey = NA, predator = NA, newprops){
+
+  Nnodes = dim(COMM$imat)[1]
+
+  # Add the level of the ID column
+  COMM$prop$ID = factor(COMM$prop$ID, levels=c(COMM$prop$ID, newname))
+
+  # Add the properties to the properties database
+  COMM$prop = rbind(COMM$prop,
+                    data.frame(ID = newname,
+                               d = newprops["d"],
+                               a = newprops["a"],
+                               p = newprops["p"],
+                               B = newprops["B"],
+                               CN = newprops["CN"],
+                               DetritusRecycling = newprops["DetritusRecycling"],
+                               isDetritus = newprops["isDetritus"],
+                               isPlant = newprops["isPlant"],
+                               canIMM = newprops["canIMM"]))
+
+  # Add the new species to the matrix
+
+  COMM$imat = rbind(cbind(COMM$imat,rep(0, Nnodes)), rep(0, Nnodes + 1))
+  row.names(COMM$imat)[(Nnodes +1)] = newname
+  colnames(COMM$imat)[(Nnodes +1)] = newname
+
+  # Identify prey
+  if(!all(is.na(prey))){
+    for(ii in 1:length(prey)){
+      COMM$imat[newname, names(prey)[ii]] = unname(prey[ii])
+    }
+  }
+
+  # Identify predators
+  if(!all(is.na(predator))){
+    for(ii in 1:length(predator)){
+      COMM$imat[names(predator)[ii],newname] = unname(predator[ii])
+    }
+  }
+  COMM = checkcomm(COMM)
+  return(COMM)
+}

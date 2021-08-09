@@ -41,11 +41,11 @@ comtrosp <- function(usin,
       # Run combination
       usin_temp = comtrosp_backend(usin = usin_temp, seltf = seltf, selected = selected_temp, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1)
     }
-    return(usin_temp)
-
+    return(checkcomm(usin_temp))
   }else{
-    # Only need to run the funciton once
-    return(comtrosp_backend(usin = usin, seltf = seltf, selected = selected, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1))
+    # Only need to run the function once
+    usin_temp = comtrosp_backend(usin = usin, seltf = seltf, selected = selected, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1)
+    return(checkcomm(usin_temp))
   }
 }
 
