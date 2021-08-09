@@ -7,11 +7,20 @@
 #' @param userdefinedinputs Do you want to input a user defined vector of input functions? If NA the input values that keep the system at equilibrium are calculated. If not, put in a vector of input rates for each node.
 #' @param has_inorganic_nitrogen Boolean: Is there an inorganic nitrogen pool?
 #' @param inorganic_nitrogen_properties A list of state variables for the inorganic nitrogen pool (INN = inputs, q = per capita loss of N, eqmN = equilibrium N). Must include a value for two of the three variables and has the final one as NA.
-#' @param forstabilityonly Boolean: Do you only want to check the stability of the carbon equations and inorganic nitrogen? If FALSE then changes in detritus N are included.
+#' @param forstabilityonly Boolean: Do you only want to check the stability of the carbon equations and inorganic nitrogen? If FALSE then changes in detritus nitrogen are also included.
 #' @param densitydependence Which nodes have density dependence? NA default means none of them do. Should be a vector of 0 (no DD) and 1 (DD) for each node.
 #' @return The stability calculated by the Jacobian as a list of the Jacobian, eigenvalues, and the maximum eigenvalue.
 #' @details
-#' The stability as defined by the Jacobian is estimated using the ordinary differential equations. Consequenlty, the parameters are retrieved using getPARAMS and then added to the function jacobian.full() in the package rootSolve using the ODE defined by foodwebode. This stability function allows the user to define density-dependence by node as present or absent. If you want to apply a uniform level of density-dependence use the function 'stability' and choose the option Moorecobain.
+#' The stability as defined by the Jacobian is estimated using the ordinary differential equations. Consequenlty, the parameters are retrieved using \code{\link{getPARAMS}} and then added to the function \code{\link[rootSolve]{jacobian.full}} using the ODE defined by \code{\link{foodwebode}} This stability function allows the user to define density-dependence by node as present or absent. If you want to apply a uniform level of density-dependence use the function 'stability' and choose the option Moorecobain.
+#' @seealso
+#' \code{\link{getPARAMS}} and \code{\link{foodwebode}} for functions which are called internally and \code{\link[rootSolve]{jacobian.full}} for the method used.
+#'
+#'@examples
+#'# Basic stability calculation:
+#'stability2(intro_comm)
+#'
+#'# Stability calculation with density-dependence for the animals:
+#'stability2(intro_comm, densitydependence = c(1, 1, 1, 0, 0, 0, 0))
 #' @export
 stability2 <- function(usin,
                        DIETLIMTS = NA,

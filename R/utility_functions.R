@@ -244,7 +244,8 @@ checkcomm <- function(usin, shuffleTL = F, rmzeros = T){
   # Properties and matrix have the same individuals
   if(!all(c(colnames(usin$imat) == rownames(usin$imat),colnames(usin$imat) == usin$prop$ID))) stop("Column names, row names, and property data frame IDs must all be the same and in the same order.")
 
-  # Identify the cannibals and mutual predators if not already done
+  # Identify the cannibals and mutual predators after a reset in case it has changed since community was created.
+  usin$prop$MutualPred = NULL
   if(!("MutualPred" %in% colnames(usin$prop))){
     usin = can_mutfeed(usin)
   }
@@ -274,7 +275,7 @@ removenodes <- function(COMM, toremove){
 
   COMM$imat = COMM$imat[whichtorm,whichtorm]
 
-  COMM$prop = subset(COMM$pop, !(COMM$prop$ID %in% toremove))
+  COMM$prop = subset(COMM$prop, !(COMM$prop$ID %in% toremove))
 
   stopifnot(all(COMM$prop$ID == rownames(COMM$imat)))
   stopifnot(all(COMM$prop$ID == colnames(COMM$imat)))

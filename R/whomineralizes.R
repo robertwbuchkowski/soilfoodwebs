@@ -1,7 +1,17 @@
 #' Direct and indirect contributions to mineralizations
 #'
 #' @param usin The community in which we want to calculate mineralization rates.
-#' @return A table of mineralization rates.
+#' @return A table of node effects on mineralization rates.
+#' @details
+#' The results are labeled as follows with direct contributions calculated from the full food web and indirect contributions calculated from the food web without that node. Indirect contributions do not include the direct contribution (i.e., it is subtracted).
+#' * DirectC: The direct contribution to carbon mineralization.
+#' * DirectN: The direct contribution to nitrogen mineralization.
+#' * IndirectC: The direct contribution to carbon mineralization.
+#' * IndirectN: The direct contribution to nitrogen mineralization.
+#'
+#' @examples
+#' # Basic example for the introductory community:
+#' whomineralizes(intro_comm)
 #' @export
 whomineralizes <- function(usin){
   Nnodes = dim(usin$imat)[1]
@@ -26,3 +36,4 @@ whomineralizes <- function(usin){
   }
   return(output)
 }
+

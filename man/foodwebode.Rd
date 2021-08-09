@@ -20,5 +20,8 @@ The changes in each node biomass along with parameters and mineralization rates.
 A function to simulation the food webs away from equilibrium.
 }
 \details{
-The food web model ode for simulating the model over time: requires y inputs and parameters from getPARAM function: it adds a detritus decomposition experiment. The only pools with nitrogen values are the detritus, because all others have fixed C:N ratios.
+The food web model ode for simulating the model over time: requires \code{y} inputs and \code{pars} parameters from the \code{\link{getPARAMS}} function. The function can handle a detritus decomposition experiment as set up by either \code{\link{getPARAMS}} or \code{\link{CNsim}}. The only pools with nitrogen values are the detritus, because all others have fixed C:N ratios.
+}
+\seealso{
+Use this function inside \code{\link{CNsim}}, \code{\link{stability2}}, and \code{\link{calculate_inputs}}. See the documentation for these functions.
 }

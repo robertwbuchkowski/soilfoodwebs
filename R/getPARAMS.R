@@ -5,7 +5,7 @@
 #' @param diet_correct Boolean: Does the organism correct it's diet?
 #' @param Conly Boolean: Is the model meant for carbon only?
 #' @param userdefinedinputs Do you want to input a user defined vector of input functions? If NA the input values that keep the system at equilibrium are calculated. If not, put in a vector of input rates for each node.
-#' @param returnCNmin Boolean: Do you want to add Cmin and Nmin to the list of the results?
+#' @param returnCNmin Boolean: Do you want to add Cmin and Nmin to the list of the results? Used internally in the package in \code{\link{calculate_inputs}}.
 #' @param has_inorganic_nitrogen Boolean: Is there an inorganic nitrogen pool?
 #' @param densitydependence Which nodes have density dependence? NA default means none of them do. Should be a vector of 0 (no DD) and 1 (DD) for each node.
 #' @param inorganic_nitrogen_properties A list of state variables for the inorganic nitrogen pool (INN = inputs, q = per capita loss of N, eqmN = equilibrium N). Must include a value for two of the three variables and has the final one as NA.
@@ -14,6 +14,11 @@
 #' @return A list with two elements: (1) a vector of parameters to run the model away from equilibrium and (2) a vector of starting biomasses.
 #' @details
 #' A function to get the parameters of a food web model for simulation purposes. It does not correct stoichiometry, so the user must do this beforehand if they want.
+#' @examples
+#' # Basic call.
+#' getPARAMS(intro_comm)
+#' @seealso
+#' \code{\link{CNsim}}, \code{\link{stability2}}, and \code{\link{calculate_inputs}} for the application of the function and use of it's options.
 #' @export
 getPARAMS <- function(usin,
                       DIETLIMTS = NA,

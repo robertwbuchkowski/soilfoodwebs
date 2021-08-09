@@ -56,3 +56,14 @@ A function to simulate the dynamics over time wrapping getPARAMS and foodwebode
 \details{
 A function that simulates the food web over the user defined times. If you do not modify the starting state using start_mod or add a detritus experiment using DETEXPT, then the result will just be a flat line if the food web is stable.
 }
+\examples{
+# Basic example with a 5\% reduction in predator biomass:
+CNsim(intro_comm, start_mod = c(0.95, 1,1,1,1,1,1))
+
+# Simulate a decomposition experiment:
+CNsim(intro_comm, DETEXPT = c("Detritus1"), DETEXPTSTART = 100)
+
+}
+\seealso{
+The function uses \code{\link{getPARAMS}} and \code{\link{foodwebode}} to simulate the community.
+}

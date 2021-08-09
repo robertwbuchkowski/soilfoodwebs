@@ -29,7 +29,7 @@ getPARAMS(
 
 \item{userdefinedinputs}{Do you want to input a user defined vector of input functions? If NA the input values that keep the system at equilibrium are calculated. If not, put in a vector of input rates for each node.}
 
-\item{returnCNmin}{Boolean: Do you want to add Cmin and Nmin to the list of the results?}
+\item{returnCNmin}{Boolean: Do you want to add Cmin and Nmin to the list of the results? Used internally in the package in \code{\link{calculate_inputs}}.}
 
 \item{has_inorganic_nitrogen}{Boolean: Is there an inorganic nitrogen pool?}
 
@@ -49,4 +49,11 @@ A function to get the parameters for a food web model.
 }
 \details{
 A function to get the parameters of a food web model for simulation purposes. It does not correct stoichiometry, so the user must do this beforehand if they want.
+}
+\examples{
+# Basic call.
+getPARAMS(intro_comm)
+}
+\seealso{
+\code{\link{CNsim}}, \code{\link{stability2}}, and \code{\link{calculate_inputs}} for the application of the function and use of it's options.
 }
