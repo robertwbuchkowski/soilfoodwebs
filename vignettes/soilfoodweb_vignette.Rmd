@@ -21,11 +21,11 @@ library(soilfoodwebs)
 ```
 
 # Introduction
-The purpose of the *soilfoodweb* package is to help analyze and simulate soil food webs. The following five functions are the core of the package:
+The purpose of the `soilfoodwebs` package is to help analyze and simulate soil food webs. The following five functions are the core of the package:
 
 1. Calculate the fluxes through a food web given biomass, parameters, and food web structure.
 1. Calculate the direct and indirect contribution of each trophic species (i.e., node) to carbon and nitrogen mineralization.
-1. Calculate food web stability and *smin*.
+1. Calculate food web stability and `smin`.
 1. Simulate the food web away from equilibrium.
 1. Conduct a detritus decomposition simulation and calculate the decomposition constant.
 
@@ -35,7 +35,7 @@ The package also can complete the following tasks using functions built to work 
 1. Modify the structure of the food web.
 
 # How to build a community
-The basis of the *soilfoodweb* package is a community, which contains two elements: a feeding matrix and a properties database. 
+The basis of the `soilfoodwebs` package is a community, which contains two elements: a feeding matrix and a properties database. 
 
 This vignette will contain the code to build a simple 5 trophic species (i.e., node) community from scratch and then run it through all the analyses included in the package. A different community is included as an example in the package, called 'intro_comm.'
 
@@ -70,19 +70,19 @@ properties = data.frame(ID = sp_names, # Name
                     canIMM = c(0,0,0,1,0)) # Boolean: Can the pool immobilize inorganic nitrogen?
 ```
 
-The units of death rate *d* are $time^{-1}$, which sets the time step for any simulations. Typically, death rates are included as the inverse of turnover time in years.
+The units of death rate `d` are $time^{-1}$, which sets the time step for any simulations. Typically, death rates are included as the inverse of turnover time in years.
 
-The units for biomass *B* set the unit for the model analyses. These **must** be some units of carbon if both carbon and nitrogen analyses are being used. 
+The units for biomass `B` set the unit for the model analyses. These **must** be some units of carbon if both carbon and nitrogen analyses are being used. 
 
-The units should also agree with the units of *CN*. If C:N ratio is a molar ratio (i.e., $mol_{Carbon}/mol_{Nitrogen}$), then the biomass should also be $mol_{Carbon}$. 
+The units should also agree with the units of `CN`. If C:N ratio is a molar ratio (i.e., $mol_{Carbon}/mol_{Nitrogen}$), then the biomass should also be $mol_{Carbon}$. 
 
 The area unit is more flexible and should be defined by the data itself. An example input for biomass data would be $grams_{Carbon}$ $hectare^{-1}$.
 
-The conversion efficiency is set by assimulation efficiency *a* and production efficiency *p*. Currently, the model assumes that production efficiency for nitrogen is perfect, so production efficiency sets the relative efficiency of carbon versus nitrogen use. These are ratio values that are unitless and should be between 0 and 1.
+The conversion efficiency is set by assimulation efficiency `a` and production efficiency `p`. Currently, the model assumes that production efficiency for nitrogen is perfect, so production efficiency sets the relative efficiency of carbon versus nitrogen use. These are ratio values that are unitless and should be between 0 and 1.
 
-The *DetritusRecycling* vector should sum to 1 and is the proportion of dead organic matter either from death or egestion that is returned to the detritus pool. In communities with only 1 detritus pool, this is just a vector with one 1 as shown here. Otherwise, you can split detritus recycling into fractions.
+The `DetritusRecycling` vector should sum to 1 and is the proportion of dead organic matter either from death or egestion that is returned to the detritus pool. In communities with only 1 detritus pool, this is just a vector with one 1 as shown here. Otherwise, you can split detritus recycling into fractions.
 
-The final properties are Boolean supplied to the model as 1 = TRUE or 0 = FALSE. *isDetritus* identifies detritus pools. Detrital pools must have $a=1$, $p=1$, $d=0$, and is the only pool type where *DetritusRecycling* can be non-zero. *isPlant* identifies plant nodes and allows them to gain carbon at a *per capita* rate. This feature is poorly developed and may not be reliable. Finally, *canIMM* identifies trophic species that can immobilize inorganic nitrogen and can therefore have net negative nitrogen mineralization.
+The final properties are Boolean supplied to the model as 1 = TRUE or 0 = FALSE. `isDetritus` identifies detritus pools. Detrital pools must have $a=1$, $p=1$, $d=0$, and is the only pool type where `DetritusRecycling` can be non-zero. `isPlant` identifies plant nodes and allows them to gain carbon at a *per capita* rate. This feature is poorly developed and may not be reliable. Finally, `canIMM` identifies trophic species that can immobilize inorganic nitrogen and can therefore have net negative nitrogen mineralization.
 
 ### Our community:
 Finally, we can combine the two features together into a new community that can be used in our analyses.
@@ -95,9 +95,9 @@ rm(feedingmatrix, sp_names, properties)
 ```
 
 # Community analysis (comana)
-The *comana* function is the central function of the package. It analyses the community fluxes and can produce plots of the results. 
+The `comana` function is the central function of the package. It analyses the community fluxes and can produce plots of the results. 
 
-Inside the *comana* function, the community is checked for quality using the `checkcomm(our_comm)`. This function adds an extra column to the properties data frame called MutualPred to identify trophic species that are cannibals and eat each other. This is will explored more below.
+Inside the `comana` function, the community is checked for quality using the `checkcomm(our_comm)`. This function adds an extra column to the properties data frame called `MutualPred` to identify trophic species that are cannibals and eat each other. This is will explored more below.
 
 
 Analysis of our community produces the following results:
@@ -126,15 +126,46 @@ ana1$fmat
 ana1$usin
 
 ```
-We can plot the results of the community analysis using the plotting built into the function. Options include the web, nitrogen mineralization, and carbon mineralization. The workhorse for the web plot is the function *plotmat* in the package diagram, so check there to understand the options.
+We can plot the results of the community analysis using the plotting built into the function. Options include the web, nitrogen mineralization, and carbon mineralization. The workhorse for the web plot is the function `diagram::plotmat`, so check there to understand the options.
 ```{r, fig.dim = c(6,6)}
 # Produce a plot if you want
 par(mfrow = c(2,2), mar = c(4,4,2,2))
 ana1 <- comana(our_comm, mkplot = T, BOX.SIZE = 0.15, BOX.CEX = 0.7, edgepos = c(0.15, 0.85))
 ```
 
+## Parameter uncertainty
+Drawing uncertain parameters from a distribution can be easily accomplished by writing a loop or user-defined function to repeat the `comana` analysis for each parameter and collating the results. 
+
+For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and uncertainty, perhaps from replicate samples. Our example focuses on carbon mineralization, but could record all fluxes.
+
+```{r}
+# Custom function to modify biomass values:
+biomass_uncert <- function(x,COMM){
+  Bmean <- COMM$prop$B
+  Bvar <- (COMM$prop$B*0.2)^2 # Assume coefficient of variation of 0.2
+
+  # Gamma parameters
+  scale = Bvar/Bmean
+  shape = Bmean^2/Bvar
+  
+  for(i in 1:length(scale)){
+    COMM$prop[i, "B"] = rgamma(1, shape = shape[i], scale = scale[i])
+  }
+  return(comana(COMM)$Cmin)
+}
+
+# Apply the function:
+res1 <- lapply(seq(1:100), biomass_uncert, COMM = our_comm)
+
+res1 <- do.call("rbind", res1)
+
+# Print a summary of the resulting variation in Carbon mineralization:
+summary(res1)
+
+```
+
 ## Correcting stoichiometry
-The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative and they cannot immobilize nitrogen. The function *corrstoich* fixes this by first trying to modify their diet preferences and then reducing their produciton efficiency to make sure they are getting enough nitrogen.
+The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative and they cannot immobilize nitrogen. The function `corrstoich` fixes this by first trying to modify their diet preferences and then reducing their produciton efficiency to make sure they are getting enough nitrogen.
 ```{r}
 our_comm2 <- corrstoich(our_comm)
 our_comm2
@@ -146,7 +177,7 @@ The feeding preference of Prey1 is modifed because they can switch to Microbes o
 rowSums(comana(our_comm2)$Nmin)
 ```
 
-Sometimes the extreme diet corrections are not reasonable. In this case, a user-defined matrix mirroring *imat* can be supplied with the **maximum** diet contributions of each trophic species in the diet. Notice how the leftover correction is now accomplished by reducing production efficiency.
+Sometimes the extreme diet corrections are not reasonable. In this case, a user-defined matrix mirroring `imat` can be supplied with the **maximum** diet contributions of each trophic species in the diet. Notice how the leftover correction is now accomplished by reducing production efficiency.
 ```{r}
 # Set diet limits
 DL <- our_comm$imat
@@ -187,15 +218,15 @@ newnode(our_comm, "NewNode", prey = c(Detritus = 1), predator = c(Predator = 2, 
 ```
 
 # Contributions to carbon and nitrogen mineralization
-A core feature of *soilfoodwebs* is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function *whomineralizes*. The direct contribution sums up their carbon and nitrogen mineralization from *comana*, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions.
+A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up their carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions.
 ```{r}
 # Calculate the mineralization contributions
 whomineralizes(our_comm)
 ```
-Remember that the units of these fluxes are set by the units of biomass *B* and death rate *d*.
+Remember that the units of these fluxes are set by the units of biomass `B` and death rate `d`.
 
 ## Calculate inputs
-You can also calculate the inputs and outputs of the food web using the function *calculate_inputs*. This function saves a data frame, but also prints the results on the console.
+You can also calculate the inputs and outputs of the food web using the function `calculate_inputs`. This function saves a data frame, but also prints the results on the console.
 ```{r}
 inout <- calculate_inputs(our_comm)
 inout
@@ -222,9 +253,9 @@ The stability of the community at equilibrium can be calculated using an eigen d
 
 1. Basic analysis of the Jacobian.
 1. Analysis of the Jacobian adding density-dependent population regulation to selected trophic species.
-1. Soil food web model also use a modified stability calculation, where *smin* is calculated. *smin* is the value multiplied by the diagonal terms of the Jacobian necessary to make the food web stable. 
+1. Soil food web model also use a modified stability calculation, where `smin` is calculated. `smin` is the value multiplied by the diagonal terms of the Jacobian necessary to make the food web stable. 
 
-Two stability functions return these calculations. *stability* calculates the Jacobian or *smin* algebraically using the structure of soil food web models. *stability2* estimates the Jacobian using the function *jacobian.full* from the package *rootSolve*.
+Two stability functions return these calculations. `stability` calculates the Jacobian or `smin` algebraically using the structure of soil food web models. `stability2` estimates the Jacobian using the function `rootSolve::jacobian.full`.
 ```{r}
 stab1 <- stability(our_comm)
 
@@ -249,7 +280,7 @@ stability2(our_comm)$rmax
 ```
 
 # Similate the food web away from equilibrium
-The function *CNsim* wraps a number of underlying functions together to retrieve the model parameters and simulate the model. Feeding occurs using Type-I (i.e., linear) functional responses, while density-dependence is user defined. Because the model is at equilibrium to start, this function is interesting when the starting conditions are modified or it is used for a detritus simulation experiment.
+The function `CNsim` wraps a number of underlying functions together to retrieve the model parameters and simulate the model. Feeding occurs using Type-I (i.e., linear) functional responses, while density-dependence is user defined. Because the model is at equilibrium to start, this function is interesting when the starting conditions are modified or it is used for a detritus simulation experiment.
 ```{r, fig.dim = c(6, 6)}
 # Simulate equilibirum over 100 time steps
 sim1 <- CNsim(our_comm)
