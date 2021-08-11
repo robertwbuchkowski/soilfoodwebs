@@ -29,7 +29,7 @@ The purpose of the `soilfoodwebs` package is to help analyze and simulate soil f
 1. Simulate the food web away from equilibrium.
 1. Conduct a detritus decomposition simulation and calculate the decomposition constant.
 
-The package also can complete the following tasks using functions built to work with the communities that are input:
+The package can complete the following tasks using functions built to work with the communities that are input:
 
 1. Modify the fluxes to balance carbon and nitrogen demands.
 1. Modify the structure of the food web.
@@ -37,12 +37,15 @@ The package also can complete the following tasks using functions built to work 
 # How to build a community
 The basis of the `soilfoodwebs` package is a community, which contains two elements: a feeding matrix and a properties database. 
 
-This vignette will contain the code to build a simple 5 trophic species (i.e., node) community from scratch and then run it through all the analyses included in the package. A different community is included as an example in the package, called 'intro_comm.'
+This vignette will contain the code to build a simple 5 trophic species (i.e., node) community from scratch and then run it through all the analyses included in the package. A different community is included as an example in the package, called `intro_comm`.
 
 ### Building the interaction matrix:
 The interaction matrix contains feeding preferences for trophic species on each other. Our example community will contain the following trophic species whose names we will save as a vector `sp_names = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus")`.
 
-We will build a matrix so that the Predator eats both prey. Prey1 eats both Microbes and Detritus, while Prey2 only eats Detritus.
+We will build a matrix so that the Predator eats both prey. Prey1 eats both Microbes and Detritus, while Prey2 only eats Detritus. Microbes eat Detritus. 
+
+At this point we will assume that species with multiple prey eat them based on their diet, so diet composition matches prey composition. This assumption could be modified by setting the diet ratio at a different value from 1:1.
+
 ```{r}
 sp_names = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus")
 feedingmatrix = matrix(c(0,1,1,0,0,
@@ -72,7 +75,7 @@ properties = data.frame(ID = sp_names, # Name
 
 The units of death rate `d` are $time^{-1}$, which sets the time step for any simulations. Typically, death rates are included as the inverse of turnover time in years.
 
-The units for biomass `B` set the unit for the model analyses. These **must** be some units of carbon if both carbon and nitrogen analyses are being used. 
+The units for biomass `B` set the unit for the model analyses. These **must** be in some units of carbon if both carbon and nitrogen analyses are being used. If `B` is not in units of carbon, then the C:N ratio calculations are nonsensical.
 
 The units should also agree with the units of `CN`. If C:N ratio is a molar ratio (i.e., $mol_{Carbon}/mol_{Nitrogen}$), then the biomass should also be $mol_{Carbon}$. 
 
@@ -82,12 +85,13 @@ The conversion efficiency is set by assimulation efficiency `a` and production e
 
 The `DetritusRecycling` vector should sum to 1 and is the proportion of dead organic matter either from death or egestion that is returned to the detritus pool. In communities with only 1 detritus pool, this is just a vector with one 1 as shown here. Otherwise, you can split detritus recycling into fractions.
 
-The final properties are Boolean supplied to the model as 1 = TRUE or 0 = FALSE. `isDetritus` identifies detritus pools. Detrital pools must have $a=1$, $p=1$, $d=0$, and is the only pool type where `DetritusRecycling` can be non-zero. `isPlant` identifies plant nodes and allows them to gain carbon at a *per capita* rate. This feature is poorly developed and may not be reliable. Finally, `canIMM` identifies trophic species that can immobilize inorganic nitrogen and can therefore have net negative nitrogen mineralization.
+The final properties are Boolean supplied to the model as 1 = TRUE or 0 = FALSE. `isDetritus` identifies detritus pools. Detrital pools must have `a==1`, `p==1`, `d==0`, and is the only pool type where `DetritusRecycling` can be non-zero. `isPlant` identifies plant nodes and allows them to gain carbon at a *per capita* rate. This feature is poorly developed and may not be reliable. Finally, `canIMM` identifies trophic species that can immobilize inorganic nitrogen and can therefore have net negative nitrogen mineralization.
 
 ### Our community:
-Finally, we can combine the two features together into a new community that can be used in our analyses.
+Finally, your combine the two features together into a list that is a community. You can use this community as an input to several functions in this package.
 
 ```{r}
+# Make the community
 our_comm <- list(imat = feedingmatrix,
                  prop = properties)
 # Clean up our working files
@@ -116,7 +120,7 @@ ana1$Cmin
 # 3. Nitrogen mineralization by each species when feeding on each of their prey
 ana1$Nmin
 
-# 3(2). Net nitrogen mineralized by each species can be easily calculated
+# 3.1. Net nitrogen mineralized by each species can be easily calculated
 rowSums(ana1$Nmin)
 
 # 4. Consumption rates for each species on each of their prey items
@@ -126,7 +130,7 @@ ana1$fmat
 ana1$usin
 
 ```
-We can plot the results of the community analysis using the plotting built into the function. Options include the web, nitrogen mineralization, and carbon mineralization. The workhorse for the web plot is the function `diagram::plotmat`, so check there to understand the options.
+We can plot the results of the community analysis using the plotting built into the function. Options include the web, nitrogen mineralization, and carbon mineralization. The workhorse for the food web plot is the function `diagram::plotmat`, so check there to understand the options.
 ```{r, fig.dim = c(6,6)}
 # Produce a plot if you want
 par(mfrow = c(2,2), mar = c(4,4,2,2))
@@ -136,7 +140,7 @@ ana1 <- comana(our_comm, mkplot = T, BOX.SIZE = 0.15, BOX.CEX = 0.7, edgepos = c
 ## Parameter uncertainty
 Drawing uncertain parameters from a distribution can be easily accomplished by writing a loop or user-defined function to repeat the `comana` analysis for each parameter and collating the results. 
 
-For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and uncertainty, perhaps from replicate samples. Our example focuses on carbon mineralization, but could record all fluxes.
+For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and uncertainty, perhaps from replicate samples. For this example we will assume a coefficient of variation of 0.2 for all trophic species. Our example focuses on carbon mineralization as the output of interest, but could record all fluxes.
 
 ```{r}
 # Custom function to modify biomass values:
@@ -159,37 +163,38 @@ res1 <- lapply(seq(1:100), biomass_uncert, COMM = our_comm)
 
 res1 <- do.call("rbind", res1)
 
-# Print a summary of the resulting variation in Carbon mineralization:
+# Print a summary of the resulting variation in carbon mineralization:
 summary(res1)
 
 ```
 
 ## Correcting stoichiometry
-The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative and they cannot immobilize nitrogen. The function `corrstoich` fixes this by first trying to modify their diet preferences and then reducing their produciton efficiency to make sure they are getting enough nitrogen.
+The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative even though they cannot immobilize nitrogen. The function `corrstoich` fixes this by first trying to modify their diet preferences and then reducing their production efficiency to make sure they are getting enough nitrogen.
 ```{r}
 our_comm2 <- corrstoich(our_comm)
 our_comm2
 ```
 
-The feeding preference of Prey1 is modifed because they can switch to Microbes over Detritus in this example. Prey2 only has one food source, so it reduces its production efficency from 0.3 to 0.16. The resulting community has acceptable nitrogen mineralization rates. Because the problem is solved using quadratic programming, small negative numbers are possible from rounding error.
+The feeding preference of Prey1 is modified because they can switch to Microbes over Detritus in this example. Prey2 only has one food source, so it reduces its production efficiency from 0.3 to 0.16. The resulting community has acceptable nitrogen mineralization rates. Because the problem is solved using quadratic programming, small negative numbers are possible from rounding error.
 ```{r}
 # Print the new nitrogen mineralization rates.
 rowSums(comana(our_comm2)$Nmin)
 ```
 
-Sometimes the extreme diet corrections are not reasonable. In this case, a user-defined matrix mirroring `imat` can be supplied with the **maximum** diet contributions of each trophic species in the diet. Notice how the leftover correction is now accomplished by reducing production efficiency.
+Sometimes the extreme diet corrections are not reasonable. In this case, a user-defined matrix mirroring `imat` can be supplied with the **maximum** diet contributions of each trophic species in the diet. Notice how the leftover correction necessary to balance Prey1's diet is now accomplished by reducing production efficiency.
 ```{r}
 # Set diet limits
-DL <- our_comm$imat
+DL <- our_comm$imat 
+# Note: This only works because all feeding is currently set as 1--the same as 100% of the diet can be from that resource if necessary.
 DL["Prey1", "Microbe"] = 0.2 # Microbes only 20% of the diet.
 corrstoich(our_comm, dietlimits = DL)
 
 ```
 
 ## Modifying the community structure
-The community can be modified to combine or remove trophic species. The function for combining trophic species has the default functionality to combine the two trophic species that have the most similar feeding relationships (i.e., predators and prey), but user defined inputs are also acceptable. Combining species outputs the biomass weighted mean of their parameters and sums their biomass.
+The community can be modified to add, combine, or remove trophic species. The function for combining trophic species has the default functionality to combine the two trophic species that have the most similar feeding relationships (i.e., predators and prey), but user-defined inputs are also acceptable. 
 
-The combined trophic species are named *first/second*.
+Combining species outputs the biomass weighted mean of their parameters and sums their biomass. The combined trophic species are named *first/second*.
 ```{r}
 # Combine the most similar trophic species
 comtrosp(our_comm)
@@ -198,7 +203,7 @@ comtrosp(our_comm)
 comtrosp(our_comm, selected = c("Predator", "Prey1"))
 ```
 
-The combination of Predator and Prey1 creates two new features. First, it creates a cannibalistic interaction noted in the properties data frame. It also has non-unitary feeding preferences, because these are biomass weighted. We can remove these changes using the following options.
+The combination of Predator and Prey1 creates two new features that need to be considered. First, it creates a cannibalistic interaction noted in the properties data frame. It also has non-unitary feeding preferences, because these are biomass weighted  preferences from the consumption rates of the original prey items. We can leave these default features or remove them using the following options.
 
 ```{r}
 # Delete cannibalism and reset feeding preferences
@@ -218,7 +223,7 @@ newnode(our_comm, "NewNode", prey = c(Detritus = 1), predator = c(Predator = 2, 
 ```
 
 # Contributions to carbon and nitrogen mineralization
-A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up their carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions.
+A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up each trophic species' carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions.
 ```{r}
 # Calculate the mineralization contributions
 whomineralizes(our_comm)
