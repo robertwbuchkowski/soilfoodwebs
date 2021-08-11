@@ -16,10 +16,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(soilfoodwebs)
-```
-
 # Introduction
 The purpose of the `soilfoodwebs` package is to help analyze and simulate soil food webs. The following five functions are the core of the package:
 
@@ -34,6 +30,11 @@ The package can complete the following tasks using functions built to work with 
 1. Modify the fluxes to balance carbon and nitrogen demands.
 1. Modify the structure of the food web.
 
+```{r setup}
+# Load the package
+library(soilfoodwebs)
+```
+
 # How to build a community
 The basis of the `soilfoodwebs` package is a community, which contains two elements: a feeding matrix and a properties database. 
 
@@ -44,7 +45,7 @@ The interaction matrix contains feeding preferences for trophic species on each 
 
 We will build a matrix so that the Predator eats both prey. Prey1 eats both Microbes and Detritus, while Prey2 only eats Detritus. Microbes eat Detritus. 
 
-At this point we will assume that species with multiple prey eat them based on their diet, so diet composition matches prey composition. This assumption could be modified by setting the diet ratio at a different value from 1:1.
+At this point we will assume that species with multiple prey eat them based on their relative biomass, so diet composition matches prey composition (Moore and de Ruiter, 2012). This assumption could be modified by setting the diet ratios using values other than 1. For example, to make the predator eat Prey1 twice as as Prey2 relative to their biomass the first row of the matrix `imat` would be `c(0,2,1,0,0)`. Note that this does *not* mean that the predator will eat twice as much of Prey1 as Prey2 unless they have the same biomass.
 
 ```{r}
 sp_names = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus")
@@ -73,6 +74,8 @@ properties = data.frame(ID = sp_names, # Name
                     canIMM = c(0,0,0,1,0)) # Boolean: Can the pool immobilize inorganic nitrogen?
 ```
 
+The properties `a`, `p`, `d`, `B`, and `CN` are used throughout the soil food web literature (Moore and de Ruiter, 2012).
+
 The units of death rate `d` are $time^{-1}$, which sets the time step for any simulations. Typically, death rates are included as the inverse of turnover time in years.
 
 The units for biomass `B` set the unit for the model analyses. These **must** be in some units of carbon if both carbon and nitrogen analyses are being used. If `B` is not in units of carbon, then the C:N ratio calculations are nonsensical.
@@ -81,7 +84,7 @@ The units should also agree with the units of `CN`. If C:N ratio is a molar rati
 
 The area unit is more flexible and should be defined by the data itself. An example input for biomass data would be $grams_{Carbon}$ $hectare^{-1}$.
 
-The conversion efficiency is set by assimulation efficiency `a` and production efficiency `p`. Currently, the model assumes that production efficiency for nitrogen is perfect, so production efficiency sets the relative efficiency of carbon versus nitrogen use. These are ratio values that are unitless and should be between 0 and 1.
+The conversion efficiency is set by assimilation efficiency `a` and production efficiency `p`. Currently, the model assumes that production efficiency for nitrogen is perfect, so production efficiency sets the relative efficiency of carbon versus nitrogen use. These are ratio values that are unitless and should be between 0 and 1.
 
 The `DetritusRecycling` vector should sum to 1 and is the proportion of dead organic matter either from death or egestion that is returned to the detritus pool. In communities with only 1 detritus pool, this is just a vector with one 1 as shown here. Otherwise, you can split detritus recycling into fractions.
 
@@ -99,7 +102,7 @@ rm(feedingmatrix, sp_names, properties)
 ```
 
 # Community analysis (comana)
-The `comana` function is the central function of the package. It analyses the community fluxes and can produce plots of the results. 
+The `comana` function is the central function of the package. It analyses the community fluxes and can produce plots of the results. Conceptually, the fluxes are calculated from the top of the food web down, so predation rates at higher trophic levels determine the amount of consumption that is necessary for lower trophic levels to maintain equilibrium (i.e., net zero growth; Moore and de Ruiter, 2012). Technically, the fluxes are calculated by solving the system of linear equations defined by setting each species` change in biomass to zero and calculating their consumption rates. The matrix equation solved is $\textbf{Ax}=\textbf{b}$, where $\textbf{A}$ defines feeding interactions, $\textbf{x}$ is the target vector of total consumption rates for each species, and $\textbf{b}$ is a vector of loss to natural death. Solving the system using matrix methods at once, instead of sequentially from the top down, allows cannibalism and mutual feeding to be calculated simultaneously.
 
 Inside the `comana` function, the community is checked for quality using the `checkcomm(our_comm)`. This function adds an extra column to the properties data frame called `MutualPred` to identify trophic species that are cannibals and eat each other. This is will explored more below.
 
@@ -140,7 +143,7 @@ ana1 <- comana(our_comm, mkplot = T, BOX.SIZE = 0.15, BOX.CEX = 0.7, edgepos = c
 ## Parameter uncertainty
 Drawing uncertain parameters from a distribution can be easily accomplished by writing a loop or user-defined function to repeat the `comana` analysis for each parameter and collating the results. 
 
-For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and uncertainty, perhaps from replicate samples. For this example we will assume a coefficient of variation of 0.2 for all trophic species. Our example focuses on carbon mineralization as the output of interest, but could record all fluxes.
+For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and some measure of uncertainty, perhaps from replicate samples (Koltz *et al.*, 2018). For this example we will assume a coefficient of variation of 0.2 for all trophic species. Our example focuses on carbon mineralization as the output of interest, but could record all fluxes.
 
 ```{r}
 # Custom function to modify biomass values:
@@ -169,7 +172,7 @@ summary(res1)
 ```
 
 ## Correcting stoichiometry
-The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative even though they cannot immobilize nitrogen. The function `corrstoich` fixes this by first trying to modify their diet preferences and then reducing their production efficiency to make sure they are getting enough nitrogen.
+The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative even though they cannot immobilize nitrogen. The function `corrstoich` fixes this by first trying to modify their diet preferences and then reducing their production efficiency to make sure they are getting enough nitrogen (Buchkowski and Lindo, 2021).
 ```{r}
 our_comm2 <- corrstoich(our_comm)
 our_comm2
@@ -192,7 +195,7 @@ corrstoich(our_comm, dietlimits = DL)
 ```
 
 ## Modifying the community structure
-The community can be modified to add, combine, or remove trophic species. The function for combining trophic species has the default functionality to combine the two trophic species that have the most similar feeding relationships (i.e., predators and prey), but user-defined inputs are also acceptable. 
+The community can be modified to add, combine, or remove trophic species. The function for combining trophic species has the default functionality to combine the two trophic species that have the most similar feeding relationships (i.e., predators and prey), but user-defined inputs are also acceptable (Buchkowski and Lindo, 2021). 
 
 Combining species outputs the biomass weighted mean of their parameters and sums their biomass. The combined trophic species are named *first/second*.
 ```{r}
@@ -223,7 +226,7 @@ newnode(our_comm, "NewNode", prey = c(Detritus = 1), predator = c(Predator = 2, 
 ```
 
 # Contributions to carbon and nitrogen mineralization
-A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up each trophic species' carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions.
+A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up each trophic species' carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions. The equations for these calculations are outlined by Holtkamp *et al.* (2011).
 ```{r}
 # Calculate the mineralization contributions
 whomineralizes(our_comm)
@@ -258,7 +261,7 @@ The stability of the community at equilibrium can be calculated using an eigen d
 
 1. Basic analysis of the Jacobian.
 1. Analysis of the Jacobian adding density-dependent population regulation to selected trophic species.
-1. Soil food web model also use a modified stability calculation, where `smin` is calculated. `smin` is the value multiplied by the diagonal terms of the Jacobian necessary to make the food web stable. 
+1. Soil food web model also use a modified stability calculation, where `smin` is calculated. `smin` is the value multiplied by the diagonal terms of the Jacobian necessary to make the food web stable (de Ruiter *et al.* 1995). 
 
 Two stability functions return these calculations. `stability` calculates the Jacobian or `smin` algebraically using the structure of soil food web models. `stability2` estimates the Jacobian using the function `rootSolve::jacobian.full`.
 ```{r}
@@ -285,7 +288,7 @@ stability2(our_comm)$rmax
 ```
 
 # Similate the food web away from equilibrium
-The function `CNsim` wraps a number of underlying functions together to retrieve the model parameters and simulate the model. Feeding occurs using Type-I (i.e., linear) functional responses, while density-dependence is user defined. Because the model is at equilibrium to start, this function is interesting when the starting conditions are modified or it is used for a detritus simulation experiment.
+The function `CNsim` wraps a number of underlying functions together to retrieve the model parameters and simulate the model (de Ruiter *et al.* 1994). Feeding occurs using Type-I (i.e., linear) functional responses, while density-dependence is user defined. Because the model is at equilibrium to start, this function is interesting when the starting conditions are modified or it is used for a detritus simulation experiment.
 ```{r, fig.dim = c(6, 6)}
 # Simulate equilibirum over 100 time steps
 sim1 <- CNsim(our_comm)
@@ -315,7 +318,7 @@ points(Microbe_Carbon~Day, data = sim1, type = "l")
 legend("bottomright", legend = c("Base", "80% predator", "w/ density-dependence"), col = c("black", "blue", "orange"), lty = 1)
 ```
 # Decomposition experiments *in silico*
-The model can be used to simulate the decomposition of detritus in an *in silico* experiment wherein the surrounding food web is not affected. Furthermore, the surrounding food web can be held at equilibrium or modified during the experiment.
+The model can be used to simulate the decomposition of detritus in an *in silico* experiment wherein the surrounding food web is not affected. Furthermore, the surrounding food web can be held at equilibrium or modified during the experiment. The inspiration for this functionality comes from the work of Zheng *et al.* (1997). 
 
 ```{r, fig.dim = c(6, 4)}
 # Simulate detritus experiment at equilibirum over 100 time steps
@@ -333,3 +336,19 @@ points(DetExpt~Day, data = sim3, type = "l", col = "orange")
 points(DetExpt~Day, data = sim1, type = "l")
 legend("topright", legend = c("Base", "80% microbial biomass", "w/ density-dependence"), col = c("black", "blue", "orange"), lty = 1)
 ```
+
+# References
+
+Buchkowski, R. W., and Z. Lindo. 2021. Stoichiometric and structural uncertainty in soil food web models. Functional Ecology 35:288–300.
+
+Holtkamp, R., A. van der Wal, P. Kardol, W. H. van der Putten, P. C. de Ruiter, and S. C. Dekker. 2011. Modelling C and N mineralisation in soil food webs during secondary succession on ex-arable land. Soil Biology & Biochemistry 43:251–260.
+
+Koltz, A. M., A. Asmus, L. Gough, Y. Pressler, and J. C. Moore. 2018. The detritus-based microbial-invertebrate food web contributes disproportionately to carbon and nitrogen cycling in the Arctic. Polar Biology 41:1531–1545.
+
+Moore, J.C. and de Ruiter, P. C. 2012. Energetic Food Webs: An Analysis of Real and Model Ecosystems. Oxford University Press, Oxford.
+
+de Ruiter, P. C., A.-M. Neutel, and J. C. Moore. 1994. Modelling food webs and nutrient cycling in agro-ecosystems. Trends in Ecology & Evolution 9:378–383.
+
+de Ruiter, P. C., A.-M. Neutel, and J. C. Moore. 1995. Energetics, Patterns of Interaction Strengths, and Stability in Real Ecosystems. Science 269:1257–1260.
+
+Zheng, D. W., J. Bengtsson, and G. I. Ågren. 1997. Soil food webs and ecosystem processes: decomposition in donor-control and Lotka-Volterra systems. American Naturalist 149:125–148.
