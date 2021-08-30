@@ -287,7 +287,7 @@ stability(our_comm)$rmax
 stability2(our_comm)$rmax
 ```
 
-# Similate the food web away from equilibrium
+# Simulate the food web away from equilibrium
 The function `CNsim` wraps a number of underlying functions together to retrieve the model parameters and simulate the model (de Ruiter *et al.* 1994). Feeding occurs using Type-I (i.e., linear) functional responses, while density-dependence is user defined. Because the model is at equilibrium to start, this function is interesting when the starting conditions are modified or it is used for a detritus simulation experiment.
 ```{r, fig.dim = c(6, 6)}
 # Simulate equilibirum over 100 time steps
