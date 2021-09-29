@@ -201,6 +201,9 @@ Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires t
 #' @export
 checkcomm <- function(usin, shuffleTL = F, rmzeros = T){
 
+  # Check that all properties are included:
+  if(!all(c("ID", "d", "a", "p", "B", "CN", "isDetritus", "isPlant", "canIMM","DetritusRecycling") %in% colnames(usin$prop))) stop("The community needs all the following properties in the database: ID, d, a, p, B, CN, isDetritus, isPlant, canIMM, and DetritusRecycling. MutualPred column will be created if it is not included.")
+
   # Remove zeros from the community
   if(rmzeros & any(usin$prop$B == 0)){
 

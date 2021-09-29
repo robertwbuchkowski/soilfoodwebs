@@ -171,6 +171,33 @@ summary(res1)
 
 ```
 
+
+```{r}
+# Built in function for parameter uncertainty:
+oot <- parameter_uncertainty(usin = our_comm, fcntorun = "comana")
+
+guidemat <- matrix(NA, nrow = length(our_comm$prop$ID), ncol = 2, dimnames = list(our_comm$prop$ID, c("B","d")))
+
+guidemat
+
+distributionin = guidemat
+errormeasurein = guidemat
+errortypein = guidemat
+
+distributionin[,1] = "gamma"
+distributionin[,2] = "uniform"
+
+distributionin
+
+errormeasurein[,1] = 0.2
+errormeasurein[,2] = 0
+
+errortypein[,1] = "CV"
+errortypein[,2] = "Min"
+
+oot <- parameter_uncertainty(usin = our_comm, distribution = distributionin, errormeasure = errormeasurein, errortype = errortypein, fcntorun = "whomineralizes", parameters = c("B", "d"))
+```
+
 ## Correcting stoichiometry
 The community we analyzed above has an important error in stoichiometry. The net nitrogen mineralization for the two prey species is negative even though they cannot immobilize nitrogen. The function `corrstoich` fixes this by first trying to modify their diet preferences and then reducing their production efficiency to make sure they are getting enough nitrogen (Buchkowski and Lindo, 2021).
 ```{r}
