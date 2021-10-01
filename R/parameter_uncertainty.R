@@ -6,7 +6,8 @@
 #' @param errormeasure A single value or matrix following the format of distribution recording the error. Value depends on errortype.
 #' @param errortype A single value or matrix following the format of distribution recording the error type. This can be "CV" for coefficient of variation, "Variance" for the variance, and "Min" for the minimum value. The latter can only be used when the distribution is uniform.
 #' @param fcntorun The function you want to run on the resulting communities. Current options are comana, whomineralizes, and CNsim.
-#' @param returnprops Boolean. Do you want to return the communities with parameter values or just the results of the function?
+#' @param returnprops Boolean. Do you want to return the communities with parameter values or just the results of the function? Only used if returnresults is TRUE.
+#' @param returnresults Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.
 #' @param replicates The number of replicate communities you want to create and analyze.
 #' @return A list of the results. See details.
 #' @details
@@ -16,7 +17,7 @@
 #' # Basic example for the introductory community:
 #' parameter_uncertainty(intro_comm)
 #' @export
-parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F){
+parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T){
 
   # Confirm inputs are correct:
   if(!all(errortype %in% c("CV", "Variance", "Min"))) stop("errortype must be either CV or Variance or Min")
@@ -101,22 +102,30 @@ parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gam
 
     communitylist[[i]] = usintemp
 
-    if(fcntorun == "comana"){
-      resultslist[[i]] = comana(usintemp)
-    }
+    if(returnresults){
+      if(fcntorun == "comana"){
+        resultslist[[i]] = comana(usintemp)
+      }
 
-    if(fcntorun == "whomineralizes"){
-      resultslist[[i]] = whomineralizes(usintemp)
-    }
+      if(fcntorun == "whomineralizes"){
+        resultslist[[i]] = whomineralizes(usintemp)
+      }
 
-    if(fcntorun == "CNsim"){
-      resultslist[[i]] = CNsim(usintemp)
+      if(fcntorun == "CNsim"){
+        resultslist[[i]] = CNsim(usintemp)
+      }
     }
-  }
+  } # Close replicates loop
 
-  if(!returnprops){
-    return(resultslist)
-  }else{
+  if(returnresults){
+    if(!returnprops){
+      return(resultslist)
+    }else{
       return(list(resultslist=resultslist,communitylist = communitylist))
     }
+  }else{
+    return(communitylist)
+  }
+
+
 }

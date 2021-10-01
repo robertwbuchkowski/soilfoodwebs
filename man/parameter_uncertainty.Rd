@@ -12,7 +12,8 @@ parameter_uncertainty(
   errortype = "CV",
   fcntorun = "comana",
   replicates = 100,
-  returnprops = F
+  returnprops = F,
+  returnresults = T
 )
 }
 \arguments{
@@ -30,7 +31,9 @@ parameter_uncertainty(
 
 \item{replicates}{The number of replicate communities you want to create and analyze.}
 
-\item{returnprops}{Boolean. Do you want to return the communities with parameter values or just the results of the function?}
+\item{returnprops}{Boolean. Do you want to return the communities with parameter values or just the results of the function? Only used if returnresults is TRUE.}
+
+\item{returnresults}{Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.}
 }
 \value{
 A list of the results. See details.
