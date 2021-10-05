@@ -141,44 +141,16 @@ ana1 <- comana(our_comm, mkplot = T, BOX.SIZE = 0.15, BOX.CEX = 0.7, edgepos = c
 ```
 
 ## Parameter uncertainty
-Drawing uncertain parameters from a distribution can be easily accomplished by writing a loop or user-defined function to repeat the `comana` analysis for each parameter and collating the results. 
+Drawing uncertain parameters from a distribution can be easily accomplished using the function `parameter_uncertainty`. This function currently allows the user to draw any parameter from either a uniform, normal, or gamma distribution. It requires information on the distribution, some measure of uncertainty (e.g., standard deviation, min/max). 
 
-For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and some measure of uncertainty, perhaps from replicate samples (Koltz *et al.*, 2018). For this example we will assume a coefficient of variation of 0.2 for all trophic species. Our example focuses on carbon mineralization as the output of interest, but could record all fluxes.
-
-```{r}
-# Custom function to modify biomass values:
-biomass_uncert <- function(x,COMM){
-  Bmean <- COMM$prop$B
-  Bvar <- (COMM$prop$B*0.2)^2 # Assume coefficient of variation of 0.2
-
-  # Gamma parameters
-  scale = Bvar/Bmean
-  shape = Bmean^2/Bvar
-  
-  for(i in 1:length(scale)){
-    COMM$prop[i, "B"] = rgamma(1, shape = shape[i], scale = scale[i])
-  }
-  return(comana(COMM)$Cmin)
-}
-
-# Apply the function:
-res1 <- lapply(seq(1:100), biomass_uncert, COMM = our_comm)
-
-res1 <- do.call("rbind", res1)
-
-# Print a summary of the resulting variation in carbon mineralization:
-summary(res1)
-
-```
+For example, we can draw biomass values from a gamma distribution given the mean values listed in our community and some measure of uncertainty, perhaps from replicate samples (Koltz *et al.*, 2018). For this example we will assume a coefficient of variation of 0.2 for all trophic species. Our example focuses on the direct and indirect effects of each organism on mineralization, `whomineralizes` as the output of interest. Other options are `comana` and `CNsim`.
 
 
-```{r}
-# Built in function for parameter uncertainty:
-oot <- parameter_uncertainty(usin = our_comm, fcntorun = "comana")
+```{r, warning=F}
+# Draw parameter uncertainty:
 
+# Build function inputs to indicate distribution, error measure, and error type.
 guidemat <- matrix(NA, nrow = length(our_comm$prop$ID), ncol = 2, dimnames = list(our_comm$prop$ID, c("B","d")))
-
-guidemat
 
 distributionin = guidemat
 errormeasurein = guidemat
@@ -187,15 +159,20 @@ errortypein = guidemat
 distributionin[,1] = "gamma"
 distributionin[,2] = "uniform"
 
-distributionin
-
 errormeasurein[,1] = 0.2
 errormeasurein[,2] = 0
 
 errortypein[,1] = "CV"
 errortypein[,2] = "Min"
 
-oot <- parameter_uncertainty(usin = our_comm, distribution = distributionin, errormeasure = errormeasurein, errortype = errortypein, fcntorun = "whomineralizes", parameters = c("B", "d"))
+oot <- parameter_uncertainty(usin = our_comm, distribution = distributionin, errormeasure = errormeasurein, errortype = errortypein, fcntorun = "whomineralizes", parameters = c("B", "d"), replicates = 10)
+
+# Bind together the result
+oot <- do.call("rbind", oot)
+
+# Summarize the direct and indirect effects of Predators across 10 parameter draws:
+summary(subset(oot, ID == "Predator")[,-1])
+
 ```
 
 ## Correcting stoichiometry

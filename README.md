@@ -36,6 +36,9 @@ if (!require("devtools")) install.packages("devtools")
 
 # Install soilfoodwebs
 devtools::install_github("robertwbuchkowski/soilfoodwebs")
+
+# Install soilfoodwebs with the vignette
+devtools::install_github("robertwbuchkowski/soilfoodwebs", build_vignettes = T, build_opts = c("--no-resave-data", "--no-manual"))
 ```
 
 ## Example
@@ -63,7 +66,6 @@ each species.
 ana1$Cmin
 #>   Predator      Orib2      Orib1     Fungi1     Fungi2  Detritus1  Detritus2 
 #>     2.8704     9.5250    40.5350 20081.9528 19970.4067     0.0000     0.0000
-
 # Nitrogen mineralization:
 rowSums(ana1$Nmin)
 #>      Predator         Orib2         Orib1        Fungi1        Fungi2 

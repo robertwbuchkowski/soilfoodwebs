@@ -41,6 +41,9 @@ if (!require("devtools")) install.packages("devtools")
 
 # Install soilfoodwebs
 devtools::install_github("robertwbuchkowski/soilfoodwebs")
+
+# Install soilfoodwebs with the vignette
+devtools::install_github("robertwbuchkowski/soilfoodwebs", build_vignettes = T, build_opts = c("--no-resave-data", "--no-manual"))
 ```
 ## Example
 
