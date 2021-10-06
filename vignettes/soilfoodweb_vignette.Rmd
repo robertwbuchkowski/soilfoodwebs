@@ -149,23 +149,28 @@ For example, we can draw biomass values from a gamma distribution given the mean
 ```{r, warning=F}
 # Draw parameter uncertainty:
 
-# Build function inputs to indicate distribution, error measure, and error type.
-guidemat <- matrix(NA, nrow = length(our_comm$prop$ID), ncol = 2, dimnames = list(our_comm$prop$ID, c("B","d")))
+# Build function inputs to indicate distribution, error measure, and error type using an empty matrix.
+guidemat <- matrix(NA, nrow = length(our_comm$prop$ID), ncol = 2, dimnames = list(our_comm$prop$ID, c("B","a")))
 
+# Replicate this matrix across the inputs.
 distributionin = guidemat
 errormeasurein = guidemat
 errortypein = guidemat
 
+# Test two most useful distributions (normal often produces negative values).
 distributionin[,1] = "gamma"
 distributionin[,2] = "uniform"
 
-errormeasurein[,1] = 0.2
-errormeasurein[,2] = 0
-
+# Gamma error uses coefficient of variation. Uniform distribution MUST be the minimum (maximum is the parameter value in the input community).
 errortypein[,1] = "CV"
 errortypein[,2] = "Min"
 
-oot <- parameter_uncertainty(usin = our_comm, distribution = distributionin, errormeasure = errormeasurein, errortype = errortypein, fcntorun = "whomineralizes", parameters = c("B", "d"), replicates = 10)
+# Set these values.
+errormeasurein[,1] = 0.2
+errormeasurein[,2] = 0
+
+# Run the calculation.
+oot <- parameter_uncertainty(usin = our_comm, distribution = distributionin, errormeasure = errormeasurein, errortype = errortypein, fcntorun = "whomineralizes", parameters = c("B", "a"), replicates = 10)
 
 # Bind together the result
 oot <- do.call("rbind", oot)

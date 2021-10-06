@@ -58,7 +58,7 @@ parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gam
   resultslist <- vector(mode = "list", length = replicates)
 
   # Set warning flag
-  onlyonce = 1
+  onlyonce = c(0,0)
 
   # Loop over the replicates and draw parameters for each one:
   for(i in 1:replicates){
@@ -68,34 +68,47 @@ parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gam
     # Draw each parameter for each node:
     for(curparam in parameters){
       for(curID in Nnames){
-        curmean = meanvalues[curID, curparam]
-        curdistribution = distribution[curID, curparam]
-        curerrormeasure = errormeasure[curID, curparam]
 
-        # Deal with uniform first:
-        if(errortype[curID, curparam] == "Min"){
-          if(curdistribution != "uniform") {stop("The errormeasure must be Min if using uniform distribution.")
+        # First make sure we aren't modifying detritus a or p parameters.
+        if(curparam %in% c("a", "p", "d") &
+           usintemp$prop[usintemp$prop$ID == curID, "isDetritus"] == 1){
+          if(onlyonce[1] ==0){
+            warning("Detritus always has d = 0, a = 1, and p = 1, so it is skipped in the paramter draws.")
+            onlyonce[1] = 1
+          }
         }else{
-          usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::runif(1, min = curerrormeasure, max = curmean)
+          # Now draw the parameters for this case:
+          curmean = meanvalues[curID, curparam]
+          curdistribution = distribution[curID, curparam]
+          curerrormeasure = errormeasure[curID, curparam]
 
-          if(onlyonce == 1){
-            warning("Uniform distribution uses the errormeasure as the minimum value and the input parameter value in the community as the maximum.")
+          # Deal with uniform first:
+          if(errortype[curID, curparam] == "Min"){
+            if(curdistribution != "uniform") {stop("The errormeasure must be Min if using uniform distribution.")
+            }else{
+              usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::runif(1, min = curerrormeasure, max = curmean)
+
+              if(onlyonce[2] == 0){
+                warning("Uniform distribution uses the errormeasure as the minimum value and the parameter value in the community as the maximum.")
+                onlyonce[2] = 1
+              }
+            }
           }
-          onlyonce = 2
+
+          if(errortype[curID, curparam] == "CV"){
+            curerrormeasure = (curmean*curerrormeasure)^2
+          }
+
+          if(curdistribution == "normal"){
+            usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rnorm(1, mean = curmean, sd = sqrt(curerrormeasure))
+          }
+
+          if(curdistribution == "gamma"){
+            usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rgamma(1, scale = curerrormeasure/curmean, shape = curmean^2/curerrormeasure)
           }
         }
 
-        if(errortype[curID, curparam] == "CV"){
-          curerrormeasure = (curmean*curerrormeasure)^2
-        }
 
-        if(curdistribution == "normal"){
-          usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rnorm(1, mean = curmean, sd = sqrt(curerrormeasure))
-        }
-
-        if(curdistribution == "gamma"){
-          usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rgamma(1, scale = curerrormeasure/curmean, shape = curmean^2/curerrormeasure)
-        }
 
       }
     } # Done drawing the parameter values
