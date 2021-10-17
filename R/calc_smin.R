@@ -9,6 +9,10 @@
 #' calc_smin(intro_comm)
 #' @export
 calc_smin <- function(usin){
+  # Check the community for any errors before calculations
+  usin = checkcomm(usin)
+
+  # Start the calculations:
   Smin = 1
   stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
   while(stabval >= 0){
