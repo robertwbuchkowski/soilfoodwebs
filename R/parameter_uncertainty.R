@@ -2,6 +2,7 @@
 #'
 #' @param usin The community in which we want to calculate mineralization rates.
 #' @param parameters A vector of parameters you want to vary.
+#' @param replacetiny A number. All parameter draws less than this value are replaced with it to avoid numerical errors in the calculations. Set to zero if you want all values to be left as drawn. Default is 0.000001.
 #' @param distribution A single string or matrix for the distribution from which to draw the parameters. If it is a matrix is has rownames of web nodes matching usin and column names matching parameters. The acceptable options are gamma, normal, uniform.
 #' @param errormeasure A single value or matrix following the format of distribution recording the error. Value depends on errortype.
 #' @param errortype A single value or matrix following the format of distribution recording the error type. This can be "CV" for coefficient of variation, "Variance" for the variance, and "Min" for the minimum value. The latter can only be used when the distribution is uniform.
@@ -17,7 +18,7 @@
 #' # Basic example for the introductory community:
 #' parameter_uncertainty(intro_comm)
 #' @export
-parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T){
+parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T){
 
   # Confirm inputs are correct:
   if(!all(errortype %in% c("CV", "Variance", "Min"))) stop("errortype must be either CV or Variance or Min")
@@ -112,6 +113,12 @@ parameter_uncertainty <- function(usin, parameters = c("B"), distribution = "gam
 
       }
     } # Done drawing the parameter values
+
+    if(replacetiny!=0){
+      # Replace the tiny values drawn to avoid numerical errors.
+      usintemp$prop[,parameters][which(usintemp$prop[,parameters] > 0 & usintemp$prop[,parameters] < replacetiny)] = replacetiny
+
+    }
 
     communitylist[[i]] = usintemp
 

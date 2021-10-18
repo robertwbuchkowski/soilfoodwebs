@@ -7,6 +7,7 @@
 parameter_uncertainty(
   usin,
   parameters = c("B"),
+  replacetiny = 1e-06,
   distribution = "gamma",
   errormeasure = 0.2,
   errortype = "CV",
@@ -20,6 +21,8 @@ parameter_uncertainty(
 \item{usin}{The community in which we want to calculate mineralization rates.}
 
 \item{parameters}{A vector of parameters you want to vary.}
+
+\item{replacetiny}{A number. All parameter draws less than this value are replaced with it to avoid numerical errors in the calculations. Set to zero if you want all values to be left as drawn. Default is 0.000001.}
 
 \item{distribution}{A single string or matrix for the distribution from which to draw the parameters. If it is a matrix is has rownames of web nodes matching usin and column names matching parameters. The acceptable options are gamma, normal, uniform.}
 

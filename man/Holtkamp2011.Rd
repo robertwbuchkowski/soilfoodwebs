@@ -8,9 +8,9 @@
 A list of four communities each with a feeding matrix and properties dataframe. NOTE: You must select one of the communities from the list to use the package functions. For example: comana(Holtkamp2011$Young) carries out calculations for the Young field.
 \describe{
   \item{Young}{The Young field.}
-  \item{Mid}{The middle age field.}
+  \item{Mid}{The mid-aged field.}
   \item{Old}{The old field.}
-  \item{Health}{The health.}
+  \item{Heathland}{The heathland.}
   \item{imat}{Within the community: The feeding matrix. Rows eat columns.}
   \item{prop}{Within the community: The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in kilograms of carbon per hectare to 10-cm depth and turnover/death rate is in years.}
 }
