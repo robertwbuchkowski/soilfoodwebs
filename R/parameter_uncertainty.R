@@ -116,7 +116,9 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
 
     if(replacetiny!=0){
       # Replace the tiny values drawn to avoid numerical errors.
-      usintemp$prop[,parameters][which(usintemp$prop[,parameters] > 0 & usintemp$prop[,parameters] < replacetiny)] = replacetiny
+      usintemp$prop[
+        which(usintemp$prop[,parameters] > 0 & usintemp$prop[,parameters] < replacetiny),
+        parameters] = replacetiny
 
     }
 
