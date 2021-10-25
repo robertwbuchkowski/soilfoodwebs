@@ -1,6 +1,6 @@
 #' A function to combine trophic species.
 #'
-#' @param usin, # The community were you are combining trophic species
+#' @param usin # The community were you are combining trophic species
 #' @param selected Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the most similar trophic species are combined.
 #' @param  deleteCOMBOcannibal Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?
 #' @param allFEEDING1 Boolean: Do you want to return all feeding preferences to 1 (T), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (F)?

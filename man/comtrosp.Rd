@@ -7,7 +7,7 @@
 comtrosp(usin, selected = NA, deleteCOMBOcannibal = F, allFEEDING1 = F)
 }
 \arguments{
-\item{usin, }{# The community were you are combining trophic species}
+\item{usin}{# The community were you are combining trophic species}
 
 \item{selected}{Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the most similar trophic species are combined.}
 

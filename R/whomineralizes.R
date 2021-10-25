@@ -4,10 +4,14 @@
 #' @return A table of node effects on mineralization rates.
 #' @details
 #' The results are labeled as follows with direct contributions calculated from the full food web and indirect contributions calculated from the food web without that node. Indirect contributions do not include the direct contribution (i.e., it is subtracted).
-#' * DirectC: The direct contribution to carbon mineralization.
-#' * DirectN: The direct contribution to nitrogen mineralization.
-#' * IndirectC: The direct contribution to carbon mineralization.
-#' * IndirectN: The direct contribution to nitrogen mineralization.
+#'
+#'\describe{
+#'   \item{DirectC}{The direct contribution to carbon mineralization.}
+#'   \item{DirectN}{The direct contribution to nitrogen mineralization.}
+#'   \item{IndirectC}{The indirect contribution to carbon mineralization.}
+#'   \item{IndirectN}{The indirect contribution to nitrogen mineralization.}
+#' }
+#' The indirect contributions are calculated as the total mineralization of the community with the trophic species minus the trophic species direct mineralization minus the total mineralization without the trophic species all divided by the total mineralizaiton with the trophic species.
 #'
 #' @examples
 #' # Basic example for the introductory community:
@@ -31,9 +35,10 @@ whomineralizes <- function(usin){
     usinmod = removenodes(usin, rmnode)
     res2 = comana(usinmod)
     output[output$ID == rmnode, "IndirectC"] =
-      (sum(res1$Cmin) - sum(res2$Cmin) - output[output$ID == rmnode, "DirectC"])/sum(res1$Cmin)
+      (sum(res1$Cmin) - res1$Cmin[rmnode] - sum(res2$Cmin))/sum(res1$Cmin)
+
     output[output$ID == rmnode, "IndirectN"] =
-      (sum(res1$Nminmat) - sum(res2$Nminmat) - output[output$ID == rmnode, "DirectN"])/sum(res1$Nminmat)
+      (sum(res1$Nminmat)- res1$Nmin[rmnode] - sum(res2$Nminmat))/sum(res1$Nminmat)
   }
   return(output)
 }
