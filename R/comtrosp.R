@@ -1,9 +1,10 @@
 #' A function to combine trophic species.
 #'
-#' @param usin # The community were you are combining trophic species
+#' @param usin The community were you are combining trophic species
 #' @param selected Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the most similar trophic species are combined.
 #' @param  deleteCOMBOcannibal Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?
 #' @param allFEEDING1 Boolean: Do you want to return all feeding preferences to 1 (T), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (F)?
+#' @param newname The name you want to use for the combined trophic species. Default replaces combines the names of the original trophic species divided by "/".
 #' @return The new community with the seltf or most similar trophic species combined.
 #' @details
 #' The function combines trophic species by merging them in both the community matrix (imat) and the properties database (prop). The user can select the two or more trophic species to be combined using the selected option. If this is left as the default (NA), then the two most similar trophic species are combined by comparing their feeding relationships.
@@ -26,7 +27,8 @@
 comtrosp <- function(usin,
                      selected = NA,
                      deleteCOMBOcannibal = F,
-                     allFEEDING1 = F
+                     allFEEDING1 = F,
+                     newname = NA
 ){
   seltf = !any(is.na(selected))
   if(seltf == T & length(selected) > 2){
@@ -41,12 +43,21 @@ comtrosp <- function(usin,
       # Run combination
       usin_temp = comtrosp_backend(usin = usin_temp, seltf = seltf, selected = selected_temp, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1)
     }
-    return(checkcomm(usin_temp))
   }else{
     # Only need to run the function once
     usin_temp = comtrosp_backend(usin = usin, seltf = seltf, selected = selected, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1)
-    return(checkcomm(usin_temp))
   }
+
+  if(!is.na(newname)){
+    # ID combined pool:
+    parname = usin_temp$prop$ID[grepl(selected[1],usin_temp$prop$ID)]
+
+    usin_temp = renamenode(usin_temp,
+                           oldname = parname,
+                           newname = newname)
+  }
+
+  return(checkcomm(usin_temp))
 }
 
 #' A function to combine trophic species with only two seltf options available
@@ -115,7 +126,7 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
   imat_mod_update = imat_mod_update[,-idmax[2]]
 
   #Update name: The new name is name1/name2
-  rownames(imat_mod_update)[idmax[1]] = colnames(imat_mod_update)[idmax[1]] = paste0(colnames(imat_mod)[idmax], collapse = "/")
+  newname1 = rownames(imat_mod_update)[idmax[1]] = colnames(imat_mod_update)[idmax[1]] = paste0(colnames(imat_mod)[idmax], collapse = "/")
 
   # Rebalance the feeding relationships to 1 if asked
   if(allFEEDING1){
@@ -157,11 +168,11 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
   prop_update = prop
 
   # Add the level of the ID column
-  prop_update[,1] = addlevel(prop_update[,1], newlevel = paste0(colnames(imat_mod)[idmax], collapse = "/"))
+  prop_update[,1] = addlevel(prop_update[,1], newlevel = newname1)
 
   # Add in the new row for the new species to replace the first species that was combined
   prop_update[prop_update$ID %in% colnames(imat_mod)[idmax[1]],-1] = emptyprop[,-1]
-  prop_update[prop_update$ID %in% colnames(imat_mod)[idmax[1]],1] = paste0(colnames(imat_mod)[idmax], collapse = "/")
+  prop_update[prop_update$ID %in% colnames(imat_mod)[idmax[1]],1] = newname1
 
   # Remove the second species that was combined
   prop_update = prop_update[!(prop_update$ID %in% colnames(imat_mod)[idmax[2]]),]
@@ -169,7 +180,7 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
   # Set cannibalism to zero
   if(deleteCOMBOcannibal){
     imat_mod_update = as.matrix(imat_mod_update)
-    diag(imat_mod_update)[which(rownames(imat_mod_update) %in% paste0(colnames(imat_mod)[idmax], collapse = "/"))] = 0
+    diag(imat_mod_update)[which(rownames(imat_mod_update) %in% newname1)] = 0
   }
 
   # Reset DetritusRecycling so it sums to one:

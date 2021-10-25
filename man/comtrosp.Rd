@@ -4,16 +4,24 @@
 \alias{comtrosp}
 \title{A function to combine trophic species.}
 \usage{
-comtrosp(usin, selected = NA, deleteCOMBOcannibal = F, allFEEDING1 = F)
+comtrosp(
+  usin,
+  selected = NA,
+  deleteCOMBOcannibal = F,
+  allFEEDING1 = F,
+  newname = NA
+)
 }
 \arguments{
-\item{usin}{# The community were you are combining trophic species}
+\item{usin}{The community were you are combining trophic species}
 
 \item{selected}{Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the most similar trophic species are combined.}
 
 \item{deleteCOMBOcannibal}{Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?}
 
 \item{allFEEDING1}{Boolean: Do you want to return all feeding preferences to 1 (T), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (F)?}
+
+\item{newname}{The name you want to use for the combined trophic species. Default replaces combines the names of the original trophic species divided by "/".}
 }
 \value{
 The new community with the seltf or most similar trophic species combined.

@@ -338,3 +338,27 @@ newnode <- function(COMM, newname, prey = NA, predator = NA, newprops){
   COMM = checkcomm(COMM)
   return(COMM)
 }
+
+#' Rename a node in a  community.
+#'
+#' @param COMM The community from which to remove nodes.
+#' @param oldname The node's old name
+#' @param newname The node's new name
+#' @return The community with the new name.
+#' @examples
+#' renamenode(intro_comm, oldname = "Predator", newname = "NewPredator")
+#' @export
+renamenode <- function(COMM, oldname,newname){
+  whichtorm = COMM$prop$ID %in% oldname
+
+  colnames(COMM$imat)[whichtorm] = rownames(COMM$imat)[whichtorm] = newname
+
+  COMM$prop$ID[whichtorm] = newname
+
+  stopifnot(all(COMM$prop$ID == rownames(COMM$imat)))
+  stopifnot(all(COMM$prop$ID == colnames(COMM$imat)))
+
+  COMM = checkcomm(COMM)
+
+  return(COMM)
+}
