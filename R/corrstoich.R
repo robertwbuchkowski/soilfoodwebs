@@ -7,7 +7,7 @@ productionadj = function(usin,immobilizationlimit = Inf
 ){
   temp0 = comana(usin, shuffleTL = F)
   FMAT = temp0$fmat
-  NMIN = sum(temp0$Nmin)
+  NMIN = sum(temp0$Nminmat)
   Nnodes = dim(FMAT)[1]
   CNj = usin$prop$CN
   CNi = matrix(usin$prop$CN, ncol = Nnodes, nrow = Nnodes, byrow = T)
@@ -84,7 +84,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
   #Identify the species that need correction
   AIJ = Aijfcn(usin)
   species = which(
-    rowSums(comana(usin, shuffleTL = F)$Nmin) < 0 & # Species must have negative Nmin rate
+    rowSums(comana(usin, shuffleTL = F)$Nminmat) < 0 & # Species must have negative Nmin rate
       apply(AIJ,1, max) > 0 & # Species must have a food item that gives them a positive nitrogen balance
       apply(usin$imat > 0, 1, sum) > 1 & # Species must have more than one food item
       !usin$prop$canIMM == 1 # The species is not flagged as a species that can immobilize N

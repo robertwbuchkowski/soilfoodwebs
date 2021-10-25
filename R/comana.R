@@ -133,9 +133,14 @@ comana <- function(usin,
 
   }
 
+  # Create a series of carbon and nitrogen outputs with consistent names and formats by changing Nmin to Nminmat and creating vector of Nmin:
+  Nminmat = Nmin
+  Nmin = rowSums(Nmin)
+
   return(list(consumption = consumption, # consumption vector
               Cmin = Cmin, # carbon mineralization vector
-              Nmin=Nmin, # nitrogen mineralization matrix
+              Nmin = Nmin, # nitrogen mineralization vector
+              Nminmat = Nminmat, # nitrogen mineralization matrix to show contributions of each trophic species to mineralization
               fmat = fmat, # Feeding matrix
               Nfmat = Nfmat, # Nitrogen feeding matrix negative values are turned to zero and indicate too much cannibalism for equilibrium
               usin =list(imat = imat, prop = prop))) # revised community with sorted trophic levels

@@ -64,5 +64,5 @@ Here are the rates of carbon and nitrogen mineralization predicted for each spec
 ana1$Cmin
 
 # Nitrogen mineralization:
-rowSums(ana1$Nmin)
+ana1$Nmin
 ```

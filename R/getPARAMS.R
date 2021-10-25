@@ -111,7 +111,7 @@ getPARAMS <- function(usin,
       IN_plant = 0 # Zero if there are no plants
     }
     # Get the inorganic nitrogen parameters (two of these must be values):
-    Nmin = sum(comana(usin, shuffleTL = F)$Nmin)
+    Nmin = sum(comana(usin, shuffleTL = F)$Nminmat)
     INN = inorganic_nitrogen_properties$INN
     if(!is.na(INN)){
       if(INN < 0) warning("INN < 0 is a constant loss rate of inorganic nitrogen.")

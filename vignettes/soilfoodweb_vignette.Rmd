@@ -120,11 +120,11 @@ ana1$consumption
 # 2. Carbon mineralized by each species
 ana1$Cmin
 
-# 3. Nitrogen mineralization by each species when feeding on each of their prey
+# 3. Nitrogen mineralization by each species
 ana1$Nmin
 
-# 3.1. Net nitrogen mineralized by each species can be easily calculated
-rowSums(ana1$Nmin)
+# 3.1. Contribution of each prey species to nitrogen mineralized when feeding on each of their prey
+ana1$Nminmat
 
 # 4. Consumption rates for each species on each of their prey items
 ana1$fmat
@@ -190,7 +190,7 @@ our_comm2
 The feeding preference of Prey1 is modified because they can switch to Microbes over Detritus in this example. Prey2 only has one food source, so it reduces its production efficiency from 0.3 to 0.16. The resulting community has acceptable nitrogen mineralization rates. Because the problem is solved using quadratic programming, small negative numbers are possible from rounding error.
 ```{r}
 # Print the new nitrogen mineralization rates.
-rowSums(comana(our_comm2)$Nmin)
+comana(our_comm2)$Nmin
 ```
 
 Sometimes the extreme diet corrections are not reasonable. In this case, a user-defined matrix mirroring `imat` can be supplied with the **maximum** diet contributions of each trophic species in the diet. Notice how the leftover correction necessary to balance Prey1's diet is now accomplished by reducing production efficiency.

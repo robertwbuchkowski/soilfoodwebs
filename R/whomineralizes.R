@@ -23,7 +23,7 @@ whomineralizes <- function(usin){
   output = data.frame(
     ID = unname(usin$prop$ID),
     DirectC = res1$Cmin/sum(res1$Cmin),
-    DirectN = rowSums(res1$Nmin)/sum(res1$Nmin),
+    DirectN = rowSums(res1$Nminmat)/sum(res1$Nminmat),
     IndirectC = NA,
     IndirectN = NA)
   rownames(output) = NULL
@@ -33,7 +33,7 @@ whomineralizes <- function(usin){
     output[output$ID == rmnode, "IndirectC"] =
       (sum(res1$Cmin) - sum(res2$Cmin) - output[output$ID == rmnode, "DirectC"])/sum(res1$Cmin)
     output[output$ID == rmnode, "IndirectN"] =
-      (sum(res1$Nmin) - sum(res2$Nmin) - output[output$ID == rmnode, "DirectN"])/sum(res1$Nmin)
+      (sum(res1$Nminmat) - sum(res2$Nminmat) - output[output$ID == rmnode, "DirectN"])/sum(res1$Nminmat)
   }
   return(output)
 }

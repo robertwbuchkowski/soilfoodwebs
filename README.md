@@ -67,7 +67,7 @@ ana1$Cmin
 #>   Predator      Orib2      Orib1     Fungi1     Fungi2  Detritus1  Detritus2 
 #>     2.8704     9.5250    40.5350 20081.9528 19970.4067     0.0000     0.0000
 # Nitrogen mineralization:
-rowSums(ana1$Nmin)
+ana1$Nmin
 #>      Predator         Orib2         Orib1        Fungi1        Fungi2 
 #>  5.510821e-01  5.941428e-17 -3.174544e-16  1.195354e+02  4.754859e+02 
 #>     Detritus1     Detritus2 
