@@ -4,13 +4,15 @@
 \alias{decompexpt}
 \title{Decomposition rates and effect of individual organisms}
 \usage{
-decompexpt(usin)
+decompexpt(usin, overtime = NA)
 }
 \arguments{
 \item{usin}{The community in which we want to calculate decomposition rates.}
+
+\item{overtime}{Do you want to return a decomposition trajectory overtime with and without all species? If so, set this to the number of time steps you want to see.}
 }
 \value{
-A table of decomposition constants for each detritus pool.
+A list. The first item is the basic decomposition constants. The second is a table of decomposition constants for each detritus pool. The third only runs if asked for by `overtime` and is the predicted trajectory.
 }
 \description{
 Decomposition rates and effect of individual organisms
@@ -19,6 +21,7 @@ Decomposition rates and effect of individual organisms
 The output list indicates the baseline decomposition rate (k; basedecomp) and then a table showing the effect on decomposition rates when the direct and indirect effects of individual trophic species are removed (decompeffects). Removing direct effects means setting consumption of that species to zero, while indirect effects occur when the community is recalculated without that species before calculating the decompostion rate (k). A positive number means the species increases decomposition. The column ID contains the node having the ffect, while DetritusID indicates the detritus pool whose rate is being reported.
 Direct effects are calculated as the decomposition rate in the full community minus decomposition rate without the species consumption of detritus, divided by the decomposition rate in the full community.
 Indirect effects are calculated as the difference in decomposition rate of the full community minus decomposition rate without the species and minus, divided by the decomposition rate with the species and minus the direct effect. A negative value here means that removing the species reduces decomposition more than any direct consumption effects it has on detritus.
+If `overtime` is a number, a table of the proportion of detritus over time is returned with and without all species. Column "Original" is the original community, while all successive columns show the removal of each trophic species.
 }
 \examples{
 # Basic example for the introductory community:

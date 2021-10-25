@@ -18,7 +18,7 @@
 #' whomineralizes(intro_comm)
 #' @export
 whomineralizes <- function(usin){
-  usin = checkcomm(usin)
+  usin = checkcomm(usin, verbose = F)
   Nnodes = dim(usin$imat)[1]
   Nnames = usin$prop$ID
 

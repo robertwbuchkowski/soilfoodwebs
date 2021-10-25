@@ -40,7 +40,7 @@ comana <- function(usin,
 ){
 
   # Check the community:
-  usin = checkcomm(usin, shuffleTL = shuffleTL, rmzeros =rmzeros)
+  usin = checkcomm(usin, shuffleTL = shuffleTL, rmzeros =rmzeros, verbose = F)
 
   imat = usin$imat # row values of imat sets predator feeding preferences!
   prop = usin$prop # properties of each trophic species

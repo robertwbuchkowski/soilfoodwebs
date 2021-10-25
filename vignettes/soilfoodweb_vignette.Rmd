@@ -326,11 +326,33 @@ points(Microbe_Carbon~Day, data = sim3, type = "l", col = "orange")
 points(Microbe_Carbon~Day, data = sim1, type = "l")
 legend("bottomright", legend = c("Base", "80% predator", "w/ density-dependence"), col = c("black", "blue", "orange"), lty = 1)
 ```
+
+# Decomposition constant
+The model can calculate the decomposition constant and the effect of each soil organism on the decomposition rate. 
+```{r, fig.dim = c(6, 4)}
+# The function decompexpt with the option overtime enabled to return a vector of decompositon
+decompres = decompexpt(our_comm, overtime = 10)
+
+# The decomposition constants for each detritus pool identified in the community
+decompres$basedecomp
+
+# A table of the direct and indirect effect of each trophic species on the decomposition constant. The direct effects set each species consumption to zero, but do not recalculate the food web consumption rates. The indirect effects recalculate the consumption rates and subtract the direct effects.
+decompres$decompeffects
+
+# Overtime produces a list of simulations showing how each trophic species affects overall decomposition rate over time. These results can be easily plotted. The user must select the detritus pool, because the list is multilayered when there is more than one detritus pool.
+decompdata = decompres$overtime$Detritus
+plot(Original~Day, data = decompdata, type = "l", ylim = c(0.5,1))
+points(Microbe~Day, data = decompdata, col = "red", type = "l")
+legend("bottomleft", legend = c("Original", "No Microbe"), col = c("black", "red"), lty = 1)
+
+```
+
 # Decomposition experiments *in silico*
 The model can be used to simulate the decomposition of detritus in an *in silico* experiment wherein the surrounding food web is not affected. Furthermore, the surrounding food web can be held at equilibrium or modified during the experiment. The inspiration for this functionality comes from the work of Zheng *et al.* (1997). 
 
 ```{r, fig.dim = c(6, 4)}
-# Simulate detritus experiment at equilibirum over 100 time steps
+# Simulate detritus experiment at equilibirum over 100 time steps.
+# NOTE: This is equivalent to the overtime option presented for decompexpt for the original community.
 sim1 <- CNsim(our_comm, DETEXPT = "Detritus", TIMES = 1:50)
 
 # Modify microbial biomass to 80% of equilibrium value

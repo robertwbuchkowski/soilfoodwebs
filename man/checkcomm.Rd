@@ -4,7 +4,7 @@
 \alias{checkcomm}
 \title{A function check the community for errors before it is used in calculations.}
 \usage{
-checkcomm(usin, shuffleTL = F, rmzeros = T)
+checkcomm(usin, shuffleTL = F, rmzeros = T, verbose = T)
 }
 \arguments{
 \item{usin}{The community to check.}
@@ -12,6 +12,8 @@ checkcomm(usin, shuffleTL = F, rmzeros = T)
 \item{shuffleTL}{A Boolean stating whether the community should be sorted.}
 
 \item{rmzeros}{A Boolean determining whether trophic species with zero biomass should be removed from the community.}
+
+\item{verbose}{A Boolean. Do you want to see all the warnings?}
 }
 \value{
 The checked community.

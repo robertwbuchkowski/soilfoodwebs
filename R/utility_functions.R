@@ -195,11 +195,12 @@ Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires t
 #' @param usin The community to check.
 #' @param shuffleTL A Boolean stating whether the community should be sorted.
 #' @param rmzeros A Boolean determining whether trophic species with zero biomass should be removed from the community.
+#' @param verbose A Boolean. Do you want to see all the warnings?
 #' @return The checked community.
 #' @examples
 #' checkcomm(intro_comm)
 #' @export
-checkcomm <- function(usin, shuffleTL = F, rmzeros = T){
+checkcomm <- function(usin, shuffleTL = F, rmzeros = T, verbose = T){
 
   # Check that all properties are included:
   if(!all(c("ID", "d", "a", "p", "B", "CN", "isDetritus", "isPlant", "canIMM","DetritusRecycling") %in% colnames(usin$prop))) stop("The community needs all the following properties in the database: ID, d, a, p, B, CN, isDetritus, isPlant, canIMM, and DetritusRecycling. MutualPred column will be created if it is not included.")
@@ -211,7 +212,7 @@ checkcomm <- function(usin, shuffleTL = F, rmzeros = T){
 
     usin$prop = subset(usin$prop, usin$prop$B !=0)
 
-    warning("Removing zero biomass nodes.")
+    if(verbose) warning("Removing zero biomass nodes.")
   }
 
   # Sort by trophic level
@@ -237,7 +238,7 @@ checkcomm <- function(usin, shuffleTL = F, rmzeros = T){
     }
 
     # Make sure detritus recycling proportion sums to 1
-    if(sum(usin$prop$DetritusRecycling) != 1){
+    if(sum(usin$prop$DetritusRecycling) != 1 & verbose){
       warning("Rescaling Detritus Recycling to sum to 1.")
 
       usin$prop$DetritusRecycling = usin$prop$DetritusRecycling/sum(usin$prop$DetritusRecycling)
