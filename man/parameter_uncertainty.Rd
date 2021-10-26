@@ -30,7 +30,7 @@ parameter_uncertainty(
 
 \item{errortype}{A single value or matrix following the format of distribution recording the error type. This can be "CV" for coefficient of variation, "Variance" for the variance, and "Min" for the minimum value. The latter can only be used when the distribution is uniform.}
 
-\item{fcntorun}{The function you want to run on the resulting communities. Current options are comana, whomineralizes, and CNsim.}
+\item{fcntorun}{The function you want to run on the resulting communities and the result you want to return. Current options are comana, whomineralizes, CNsim, decompexpt. You can also include any of the outputs of comana or decompexpt to automatically subset the results to the vector of interest. For example, Cmin only returns carbon mineralization.}
 
 \item{replicates}{The number of replicate communities you want to create and analyze.}
 

@@ -6,7 +6,7 @@
 #' @param distribution A single string or matrix for the distribution from which to draw the parameters. If it is a matrix is has rownames of web nodes matching usin and column names matching parameters. The acceptable options are gamma, normal, uniform.
 #' @param errormeasure A single value or matrix following the format of distribution recording the error. Value depends on errortype.
 #' @param errortype A single value or matrix following the format of distribution recording the error type. This can be "CV" for coefficient of variation, "Variance" for the variance, and "Min" for the minimum value. The latter can only be used when the distribution is uniform.
-#' @param fcntorun The function you want to run on the resulting communities. Current options are comana, whomineralizes, and CNsim.
+#' @param fcntorun The function you want to run on the resulting communities and the result you want to return. Current options are comana, whomineralizes, CNsim, decompexpt. You can also include any of the outputs of comana or decompexpt to automatically subset the results to the vector of interest. For example, Cmin only returns carbon mineralization.
 #' @param returnprops Boolean. Do you want to return the communities with parameter values or just the results of the function? Only used if returnresults is TRUE.
 #' @param returnresults Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.
 #' @param replicates The number of replicate communities you want to create and analyze.
@@ -25,7 +25,7 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
 
   if(!all(distribution %in% c("gamma", "normal", "uniform"))) stop("distribution must be either gamma or normal or uniform")
 
-  if(!(fcntorun %in% c("comana", "whomineralizes", "CNsim"))) stop("fcntorun must be either comana or whomineralizes or CNsim")
+  if(!(fcntorun %in% c("comana", "whomineralizes", "CNsim", "decompexpt", "Cmin", "Nmin", "consumption", "Nminmat", "fmat", "Nfmat", "basedecomp", "decompeffects"))) stop("fcntorun must be a recognized one")
 
   # Check and finalize community:
   usin = checkcomm(usin)
@@ -125,6 +125,35 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
     communitylist[[i]] = usintemp
 
     if(returnresults){
+
+      if(fcntorun =="consumption"){
+        resultslist[[i]] = comana(usintemp)$consumption
+      }
+
+      if(fcntorun =="consumption"){
+        resultslist[[i]] = comana(usintemp)$consumption
+      }
+
+      if(fcntorun =="Cmin"){
+        resultslist[[i]] = comana(usintemp)$Cmin
+      }
+
+      if(fcntorun =="Nmin"){
+        resultslist[[i]] = comana(usintemp)$Nmin
+      }
+
+      if(fcntorun =="Nminmat"){
+        resultslist[[i]] = comana(usintemp)$Nminmat
+      }
+
+      if(fcntorun =="fmat"){
+        resultslist[[i]] = comana(usintemp)$fmat
+      }
+
+      if(fcntorun =="Nfmat"){
+        resultslist[[i]] = comana(usintemp)$Nfmat
+      }
+
       if(fcntorun == "comana"){
         resultslist[[i]] = comana(usintemp)
       }
@@ -135,6 +164,18 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
 
       if(fcntorun == "CNsim"){
         resultslist[[i]] = CNsim(usintemp)
+      }
+
+      if(fcntorun == "decompexpt"){
+        resultslist[[i]] = decompexpt(usintemp)
+      }
+
+      if(fcntorun == "basedecomp"){
+        resultslist[[i]] = decompexpt(usintemp)$basedecomp
+      }
+
+      if(fcntorun == "decompeffects"){
+        resultslist[[i]] = decompexpt(usintemp)$decompeffects
       }
     }
   } # Close replicates loop

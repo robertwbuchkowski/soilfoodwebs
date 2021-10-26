@@ -177,7 +177,7 @@ oot <- do.call("rbind", oot)
 
 # Summarize the direct and indirect effects of Predators across 10 parameter draws:
 summary(subset(oot, ID == "Predator")[,-1])
-
+# NOTE: You can subset to either include or exclude any trophic species from the result by filtering on the ID column.
 ```
 
 ## Correcting stoichiometry
@@ -328,18 +328,22 @@ legend("bottomright", legend = c("Base", "80% predator", "w/ density-dependence"
 ```
 
 # Decomposition constant
-The model can calculate the decomposition constant and the effect of each soil organism on the decomposition rate. 
+The model can calculate the decomposition constant and the effect of each soil organism on the decomposition rate. The function ``decompexpt` can calculate decomposition constants (k) with the option overtime enabled to return a vector of decomposition. 
+
+Besides returning the decomposition rate, the function returns a table of the effect of each trophic species on the decomposition constant. The direct effects set each species consumption to zero, but do not recalculate the food web consumption rates. The indirect effects recalculate the consumption rates and subtract the direct effects.
+
+Overtime produces a list of simulations showing how each trophic species affects overall decomposition rate over time. These results can be easily plotted. The user must select the detritus pool, because the list is multilayered when there is more than one detritus pool.
 ```{r, fig.dim = c(6, 4)}
-# The function decompexpt with the option overtime enabled to return a vector of decompositon
+# The function decompexpt 
 decompres = decompexpt(our_comm, overtime = 10)
 
 # The decomposition constants for each detritus pool identified in the community
 decompres$basedecomp
 
-# A table of the direct and indirect effect of each trophic species on the decomposition constant. The direct effects set each species consumption to zero, but do not recalculate the food web consumption rates. The indirect effects recalculate the consumption rates and subtract the direct effects.
+# A table of the direct and indirect effects 
 decompres$decompeffects
 
-# Overtime produces a list of simulations showing how each trophic species affects overall decomposition rate over time. These results can be easily plotted. The user must select the detritus pool, because the list is multilayered when there is more than one detritus pool.
+# Plot the decomposition with and without Microbe
 decompdata = decompres$overtime$Detritus
 plot(Original~Day, data = decompdata, type = "l", ylim = c(0.5,1))
 points(Microbe~Day, data = decompdata, col = "red", type = "l")
@@ -352,7 +356,7 @@ The model can be used to simulate the decomposition of detritus in an *in silico
 
 ```{r, fig.dim = c(6, 4)}
 # Simulate detritus experiment at equilibirum over 100 time steps.
-# NOTE: This is equivalent to the overtime option presented for decompexpt for the original community.
+# NOTE: This is equivalent to the overtime option presented for decompexpt for the original community although numerical errors in the solver makes it diverge slightly.
 sim1 <- CNsim(our_comm, DETEXPT = "Detritus", TIMES = 1:50)
 
 # Modify microbial biomass to 80% of equilibrium value
