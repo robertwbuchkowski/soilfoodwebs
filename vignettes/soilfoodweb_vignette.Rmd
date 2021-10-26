@@ -235,7 +235,12 @@ newnode(our_comm, "NewNode", prey = c(Detritus = 1), predator = c(Predator = 2, 
 ```
 
 # Contributions to carbon and nitrogen mineralization
-A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up each trophic species' carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions. The equations for these calculations are outlined by Holtkamp *et al.* (2011).
+A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up each trophic species' carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions. Similar calculations are outlined by Holtkamp *et al.* (2011), but our version of them produces a different result. Specifically, our calculation uses the following formula for indirect effects $(IE_X)$ on mineralization of element $X$:
+
+$$IE_X = (X_{with} - X_{without}- X_{mineralization})/X_{with} $$
+
+where $X_{with}$ is the total mineralization with the trophic species,$X_{without}$ is the mineralization without the trophic species, and $X_{mineralization}$ is the mineralization coming directly from the trophic species (e.g., respiration rate).
+
 ```{r}
 # Calculate the mineralization contributions
 whomineralizes(our_comm)
