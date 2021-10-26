@@ -234,6 +234,117 @@ You can also add a new node.
 newnode(our_comm, "NewNode", prey = c(Detritus = 1), predator = c(Predator = 2, Prey1 = 0.1), newprops = c(d = 1, a = 0.1, p = 0.1, B = 10, CN = 10, DetritusRecycling = 0, isDetritus = 0, isPlant = 0, canIMM = 0))
 ```
 
+# Calibrating the fluxes to a specific ecosystem
+`soilfoodwebs` calculates the fluxes of carbon and nitrogen based on the community demands, which means that it is *very* likely that the initial predictions of total mineralization do not match empirical data. This because generic parameter for conversion efficiencies (i.e., `a` and `p`) are unlikely to match a given study system.
+
+The user adjust the parameters to deal with this mismatch using two sources: (1) empirical measurements of mineralization or (2) known relationships with abitoic variables.
+
+## Using empirical measurements of mineralization
+It is not possible to adjust all the food web parameters with overall ecosystem flux data (e.g., carbon mineralization), because there are too many parameters in the model to constrain. Instead, Holtkamp *et al.* (2011) suggests modifying the microbial production efficiency to match carbon and nitrogen mineralization rates. Modifying only microbial efficiencies is justified because they represent the vast majority of soil heterotrophic respiration and mineralization. We suggest the same strategy.
+
+We will demonstrate this with the `intro_comm` because it has two microbial pools. We assume the baseline parameters are the correct ones, so we can calculate true carbon and ntirogen mineralization. In reality, these would be measured empirically or estimated for the target ecosystem using available data bases (Jian *et al.* 2021).
+
+```{r, fig.dim = c(6, 6)}
+# Create function to modify fungal production efficiency
+ccxf <- function(p, ccx){
+  
+  ccx$prop$p[4] = p[1]
+  ccx$prop$p[5] = p[2]
+  
+  return(c(Cmin = sum(comana(corrstoich(ccx))$Cmin), Nmin = sum(comana(corrstoich(ccx))$Nmin)))
+}
+
+# Return carbon and nitrogen mineralization across these gradients
+res1 = expand.grid(1:10/10,1:10/10)
+res2 = res1
+
+for(i in 1:100){
+  res2[i,] = ccxf(as.numeric(res1[i,]), ccx = intro_comm)
+}
+
+res = cbind(res1, res2)
+colnames(res) = c("p1", "p2", "Cmin", "Nmin")
+
+# Create color gradient to work with
+res$p1col = palette.colors(10, "Polychrome 36")[res$p1*10]
+res$p2col = palette.colors(10, "Polychrome 36")[res$p2*10]
+
+# Plot the results
+par(mfrow = c(2,2))
+plot(Cmin~p1, data = res, col = p2col, xlab = "Prod. eff. Fungi 1", pch = 19)
+abline(h = sum(comana(corrstoich(intro_comm))$Cmin), lty = 2)
+
+plot(Nmin~p1, data = res, col = p2col, xlab = "Prod. eff. Fungi 1", pch = 19)
+abline(h = sum(comana(corrstoich(intro_comm))$Nmin), lty = 2)
+
+plot(Nmin~Cmin, data = res, col = p2col, bg = p1col, pch = 21)
+abline(h = sum(comana(corrstoich(intro_comm))$Nmin), lty = 2)
+abline(v = sum(comana(corrstoich(intro_comm))$Cmin), lty = 2)
+plot.new()
+legend("topright", legend = seq(0.1, 1, by = 0.1), 
+       col = palette.colors(10, "Polychrome 36"),
+       pch = 19, cex = 0.5, title = "Production efficiency scale", ncol = 2, xpd = T)
+```
+
+The results above demonstrate that a single measure of carbon mineralization (Cmin) or nitrogen mineralization(Nmin) is not sufficient to fit two food web parameters like microbial production efficiency (x-axis and color in top two figures) because multiple combinations can produce the true value (dashed lines).
+
+When the user has data on both carbon and nitrogen mineralization, two microbial production efficiencies can be resolved accurately (bottom figure; color and fill show the two production efficiencies).
+
+In a applied situation, optimization, for example `stats::optim`, could be used to match the parameters and the data. Gauzens *et al.* 2019 provide excellent examples for how to use metabolic scaling relationships to fit loss rates in their R package `fluxweb`. Their package places metabolic losses in a different location than `soilfoodwebs`, but the user could predict metabolic losses using body size and then adjust production efficiencies accordingly to get the desired carbon mineralization rates.
+
+More detailed relationships between abiotic variables and microbial assimilation and production efficiency are available. These can be helpful because the relationship between body size and metabolism are less useful for microorganisms. 
+
+## Using defined relationships
+
+Another option is to use defined relationships between respiration (Manzoni *et al.* 2012). For example, Xu *et al.* (2014) provide some relationships for microbial death rate, respiration rate, and production efficiency across temperature, moisture, and substrate quality gradients. We implement these for the community here to demonstrate how to adjust microbial death rate and conversion efficiency.
+
+```{r, fig.dim = c(6, 6)}
+
+temp_moist_microbe <- function(temp, moist, comm){
+  
+  # Set functional range:
+  if(temp < 0 | moist < 0.05) stop("Function not coded for these conditions.")
+  
+  # Functions and parameters from Xu et al. 2014
+  fmm = ifelse(moist < 0.6,log10(0.05/moist)/log10(0.05/moist),1)
+  
+  fmt = 2.5^((temp - 25)/10)
+
+  # New microbial death rate
+  comm$prop[comm$prop$ID == "Microbe", "d"] = 
+    comm$prop[comm$prop$ID == "Microbe", "d"]*fmm*fmt
+  
+  # New microbial assimilation efficiency
+  comm$prop[comm$prop$ID == "Microbe", "a"] = 
+    (0.43 - (-0.012*(temp-15)))*
+    (comm$prop[comm$prop$ID == "Microbe", "CN"]/comm$prop[comm$prop$ID == "Detritus", "CN"])^0.6
+  
+  # Ignoring changes in maintenance respiration here. See the cited paper for the details.
+
+  return(comm)
+}
+
+# Explore the carbon mineralization rate across temperature as an example
+
+res <- data.frame(temp = seq(1,30, length = 10))
+
+res$Cmin = NA
+
+for(i in 1:10){
+  res$Cmin[i] = 
+    sum( # Sum all C min rates
+      comana( # Calculate Cmin
+        corrstoich( # Correct stoichiometry
+      temp_moist_microbe(res[i, "temp"], 0.7, our_comm)
+      )
+      )$Cmin
+      )
+}
+
+plot(Cmin~temp, data = res, xlab = "Temperature", ylab = "C. mineralization", type = "l", lwd = 2)
+
+```
+
 # Contributions to carbon and nitrogen mineralization
 A core feature of `soilfoodwebs` is to calculate the contribution of each trophic species to carbon and nitrogen mineralization. This is achieved using the function `whomineralizes`. The direct contribution sums up each trophic species' carbon and nitrogen mineralization from `comana`, while their indirect contribution calculates the change in fluxes without that trophic species and removes their direct contributions. Similar calculations are outlined by Holtkamp *et al.* (2011), but our version of them produces a different result. Specifically, our calculation uses the following formula for indirect effects $(IE_X)$ on mineralization of element $X$:
 
@@ -381,14 +492,23 @@ legend("topright", legend = c("Base", "80% microbial biomass", "w/ density-depen
 
 Buchkowski, R. W., and Z. Lindo. 2021. Stoichiometric and structural uncertainty in soil food web models. Functional Ecology 35:288–300.
 
+Gauzens, B., Barnes, A., Giling, D. P., Hines, J., Jochum, M., Lefcheck, J. S., Rosenbaum, B., Wang, S., & Brose, U. (2019). fluxweb: An R package to easily estimate energy fluxes in food webs. Methods in Ecology and Evolution, 10(2), 270–279.
+
+
 Holtkamp, R., A. van der Wal, P. Kardol, W. H. van der Putten, P. C. de Ruiter, and S. C. Dekker. 2011. Modelling C and N mineralisation in soil food webs during secondary succession on ex-arable land. Soil Biology & Biochemistry 43:251–260.
 
+Jian, J., Vargas, R., Anderson-Teixeira, K., Stell, E., Herrmann, V., Horn, M., Kholod, N., Manzon, J., Marchesi, R., Paredes, D., & Bond-Lamberty, B. (2021). A restructured and updated global soil respiration database (SRDB-V5). Earth System Science Data, 13(2), 255–267.
+
 Koltz, A. M., A. Asmus, L. Gough, Y. Pressler, and J. C. Moore. 2018. The detritus-based microbial-invertebrate food web contributes disproportionately to carbon and nitrogen cycling in the Arctic. Polar Biology 41:1531–1545.
+
+Manzoni, S., Taylor, P., Richter, A., Porporato, A., & Ågren, G. I. (2012). Environmental and stoichiometric controls on microbial carbon-use efficiency in soils: Research review. New Phytologist, 196(1), 79–91.
 
 Moore, J.C. and de Ruiter, P. C. 2012. Energetic Food Webs: An Analysis of Real and Model Ecosystems. Oxford University Press, Oxford.
 
 de Ruiter, P. C., A.-M. Neutel, and J. C. Moore. 1994. Modelling food webs and nutrient cycling in agro-ecosystems. Trends in Ecology & Evolution 9:378–383.
 
 de Ruiter, P. C., A.-M. Neutel, and J. C. Moore. 1995. Energetics, Patterns of Interaction Strengths, and Stability in Real Ecosystems. Science 269:1257–1260.
+
+Xu, X., Schimel, J. P., Thornton, P. E., Song, X., Yuan, F., & Goswami, S. (2014). Substrate and environmental controls on microbial assimilation of soil organic carbon: A framework for Earth system models. Ecology Letters, 17(5), 547–555.
 
 Zheng, D. W., J. Bengtsson, and G. I. Ågren. 1997. Soil food webs and ecosystem processes: decomposition in donor-control and Lotka-Volterra systems. American Naturalist 149:125–148.
