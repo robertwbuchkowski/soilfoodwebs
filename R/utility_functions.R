@@ -363,3 +363,30 @@ renamenode <- function(COMM, oldname,newname){
 
   return(COMM)
 }
+
+#' Check the carbon flux equilibrium output by comana.
+#'
+#' @param cares The output from comana.
+#' @return Boolean: Is the community at equilibrium with inputs to the first trophic level?
+#' @examples
+#' checkeqm(comana(intro_comm))
+#' @export
+checkeqm <- function(cares){
+
+  netchange = # Consumption rate
+    cares$usin$prop$a*cares$usin$prop$p*rowSums(cares$fmat) -
+
+    # Natural death
+    cares$usin$prop$d*cares$usin$prop$B -
+
+    # Predation
+    colSums(cares$fmat) +
+
+    # Detritus recycling
+    cares$usin$prop$DetritusRecycling*sum(cares$usin$prop$d*cares$usin$prop$B + (1 - cares$usin$prop$a)*cares$usin$prop$p*rowSums(cares$fmat))
+
+  # Get rid of basal trophic levels where inputs are OK
+  netchange = netchange[TLcheddar(cares$usin$imat) != 1]
+
+  return(all.equal(unname(netchange),rep(0, length(netchange))))
+}

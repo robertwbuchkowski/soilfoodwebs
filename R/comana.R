@@ -137,11 +137,16 @@ comana <- function(usin,
   Nminmat = Nmin
   Nmin = rowSums(Nmin)
 
-  return(list(consumption = consumption, # consumption vector
-              Cmin = Cmin, # carbon mineralization vector
-              Nmin = Nmin, # nitrogen mineralization vector
-              Nminmat = Nminmat, # nitrogen mineralization matrix to show contributions of each trophic species to mineralization
-              fmat = fmat, # Feeding matrix
-              Nfmat = Nfmat, # Nitrogen feeding matrix negative values are turned to zero and indicate too much cannibalism for equilibrium
-              usin =list(imat = imat, prop = prop))) # revised community with sorted trophic levels
+  whattoreturn = list(consumption = consumption, # consumption vector
+                      Cmin = Cmin, # carbon mineralization vector
+                      Nmin = Nmin, # nitrogen mineralization vector
+                      Nminmat = Nminmat, # nitrogen mineralization matrix to show contributions of each trophic species to mineralization
+                      fmat = fmat, # Feeding matrix
+                      Nfmat = Nfmat, # Nitrogen feeding matrix negative values are turned to zero and indicate too much cannibalism for equilibrium
+                      usin =list(imat = imat, prop = prop)) # revised community with sorted trophic levels
+
+  if(!checkeqm(whattoreturn)){
+    stop("Equilibrium not successfully reached. Check the calculations.")
+  }
+  return(whattoreturn)
 }
