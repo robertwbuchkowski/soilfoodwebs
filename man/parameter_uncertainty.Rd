@@ -15,7 +15,8 @@ parameter_uncertainty(
   replicates = 100,
   returnprops = F,
   returnresults = T,
-  rejectnegconsump = T
+  rejectnegconsump = T,
+  correctstoich = T
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ parameter_uncertainty(
 \item{returnresults}{Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.}
 
 \item{rejectnegconsump}{Boolean. Should the draws reject communities with negative consumption rates?}
+
+\item{correctstoich}{Boolean. Do you want to correct the stoichiometry of the community before running the fcntorun? This does NOT correct the community stoichiometry returned in communitylist, so the user can see the original result without the correction applied.}
 }
 \value{
 A list of the results. See details.

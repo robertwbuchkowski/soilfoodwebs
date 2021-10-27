@@ -182,7 +182,7 @@ corrstoich <- function(usin,
                        dietlimits = c(NA),
                        Immobilizationlimit = Inf
 ){
-  usin = TLsort(usin)
+  usin = checkcomm(usin)
 
   if(forceProd){
     usin3 = productionadj(usin = usin, immobilizationlimit = Immobilizationlimit)

@@ -11,6 +11,7 @@
 #' @param returnresults Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.
 #' @param replicates The number of replicate communities you want to create and analyze.
 #' @param rejectnegconsump Boolean. Should the draws reject communities with negative consumption rates?
+#' @param correctstoich Boolean. Do you want to correct the stoichiometry of the community before running the fcntorun? This does NOT correct the community stoichiometry returned in communitylist, so the user can see the original result without the correction applied.
 #' @return A list of the results. See details.
 #' @details
 #' The results are always in a list. If returnprops = T, then the top lay is a list of length 2 with resultslist and communitylist attributes, otherwise only resultslist is returned. The communitylist has the communities with parameter draws in order. The resultslist has the results of the function indicated in fcntorun.
@@ -19,7 +20,7 @@
 #' # Basic example for the introductory community:
 #' parameter_uncertainty(intro_comm)
 #' @export
-parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T, rejectnegconsump = T){
+parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T, rejectnegconsump = T, correctstoich = T){
 
   # Confirm inputs are correct:
   if(!all(errortype %in% c("CV", "Variance", "Min"))) stop("errortype must be either CV or Variance or Min")
@@ -137,6 +138,11 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
     communitylist[[i]] = usintemp
 
     if(returnresults){
+
+      # Correct the stoichiometry if requested
+      if(correctstoich){
+        usintemp = corrstoich(usintemp)
+      }
 
       if(fcntorun =="consumption"){
         resultslist[[i]] = comana(usintemp)$consumption
