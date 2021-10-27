@@ -61,6 +61,11 @@ comana <- function(usin,
 
   consumption = base::solve(temp_mat,(prop$d*prop$B))
 
+  # Confirm that this solution is unique by showing Ax = 0 produces x = 0
+  if(any(solve(temp_mat,rep(0, Nnodes)) != 0)){
+    warning("Solution to the web is not unique!")
+  }
+
   names(consumption) = colnames(imat) # Names match the trophic species names
 
   # Create a new matrix for feeding rates with the same dimensions as the food web matrix
