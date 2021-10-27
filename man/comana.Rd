@@ -15,7 +15,7 @@ comana(
   PLOT.CEX = 1,
   edgepos = c(0.1, 0.9),
   TCK = 0.05,
-  shuffleTL = T,
+  shuffleTL = F,
   prettynames = NA,
   fwdlwdcust = NULL,
   arrowlog = F,

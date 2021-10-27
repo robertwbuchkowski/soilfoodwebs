@@ -24,8 +24,12 @@ whomineralizes <- function(usin){
 
   res1 <- comana(usin)
 
+  if(any(unname(usin$prop$ID) != names(res1$usin$prop$ID))){
+    stop("Sorting of trophic levels not matching up")
+  }
+
   output = data.frame(
-    ID = unname(usin$prop$ID),
+    ID = unname(res1$usin$prop$ID),
     DirectC = res1$Cmin/sum(res1$Cmin),
     DirectN = rowSums(res1$Nminmat)/sum(res1$Nminmat),
     IndirectC = NA,
