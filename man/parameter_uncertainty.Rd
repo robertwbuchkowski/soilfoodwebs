@@ -14,7 +14,8 @@ parameter_uncertainty(
   fcntorun = "comana",
   replicates = 100,
   returnprops = F,
-  returnresults = T
+  returnresults = T,
+  rejectnegconsump = T
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ parameter_uncertainty(
 \item{returnprops}{Boolean. Do you want to return the communities with parameter values or just the results of the function? Only used if returnresults is TRUE.}
 
 \item{returnresults}{Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.}
+
+\item{rejectnegconsump}{Boolean. Should the draws reject communities with negative consumption rates?}
 }
 \value{
 A list of the results. See details.

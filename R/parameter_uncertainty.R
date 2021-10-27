@@ -10,6 +10,7 @@
 #' @param returnprops Boolean. Do you want to return the communities with parameter values or just the results of the function? Only used if returnresults is TRUE.
 #' @param returnresults Boolean. Do you want to return the results of the function? If this is FALSE, the fcntorun is ignored and a list of communities with parameter draws is returned.
 #' @param replicates The number of replicate communities you want to create and analyze.
+#' @param rejectnegconsump Boolean. Should the draws reject communities with negative consumption rates?
 #' @return A list of the results. See details.
 #' @details
 #' The results are always in a list. If returnprops = T, then the top lay is a list of length 2 with resultslist and communitylist attributes, otherwise only resultslist is returned. The communitylist has the communities with parameter draws in order. The resultslist has the results of the function indicated in fcntorun.
@@ -18,7 +19,7 @@
 #' # Basic example for the introductory community:
 #' parameter_uncertainty(intro_comm)
 #' @export
-parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T){
+parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T, rejectnegconsump = T){
 
   # Confirm inputs are correct:
   if(!all(errortype %in% c("CV", "Variance", "Min"))) stop("errortype must be either CV or Variance or Min")
@@ -66,62 +67,73 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
     # Create an internal copy of the community to modify:
     usintemp = usin
 
-    # Draw each parameter for each node:
-    for(curparam in parameters){
-      for(curID in Nnames){
+    # Start a loop to decide whether draw should be accepted
+    accept = 0
+    while(accept == 0){
+      # Draw each parameter for each node:
+      for(curparam in parameters){
+        for(curID in Nnames){
 
-        # First make sure we aren't modifying detritus a or p parameters.
-        if(curparam %in% c("a", "p", "d") &
-           usintemp$prop[usintemp$prop$ID == curID, "isDetritus"] == 1){
-          if(onlyonce[1] ==0){
-            warning("Detritus always has d = 0, a = 1, and p = 1, so it is skipped in the paramter draws.")
-            onlyonce[1] = 1
-          }
-        }else{
-          # Now draw the parameters for this case:
-          curmean = meanvalues[curID, curparam]
-          curdistribution = distribution[curID, curparam]
-          curerrormeasure = errormeasure[curID, curparam]
+          # First make sure we aren't modifying detritus a or p parameters.
+          if(curparam %in% c("a", "p", "d") &
+             usintemp$prop[usintemp$prop$ID == curID, "isDetritus"] == 1){
+            if(onlyonce[1] ==0){
+              warning("Detritus always has d = 0, a = 1, and p = 1, so it is skipped in the paramter draws.")
+              onlyonce[1] = 1
+            }
+          }else{
+            # Now draw the parameters for this case:
+            curmean = meanvalues[curID, curparam]
+            curdistribution = distribution[curID, curparam]
+            curerrormeasure = errormeasure[curID, curparam]
 
-          # Deal with uniform first:
-          if(errortype[curID, curparam] == "Min"){
-            if(curdistribution != "uniform") {stop("The errormeasure must be Min if using uniform distribution.")
-            }else{
-              usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::runif(1, min = curerrormeasure, max = curmean)
+            # Deal with uniform first:
+            if(errortype[curID, curparam] == "Min"){
+              if(curdistribution != "uniform") {stop("The errormeasure must be Min if using uniform distribution.")
+              }else{
+                usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::runif(1, min = curerrormeasure, max = curmean)
 
-              if(onlyonce[2] == 0){
-                warning("Uniform distribution uses the errormeasure as the minimum value and the parameter value in the community as the maximum.")
-                onlyonce[2] = 1
+                if(onlyonce[2] == 0){
+                  warning("Uniform distribution uses the errormeasure as the minimum value and the parameter value in the community as the maximum.")
+                  onlyonce[2] = 1
+                }
               }
             }
-          }
 
-          if(errortype[curID, curparam] == "CV"){
-            curerrormeasure = (curmean*curerrormeasure)^2
-          }
+            if(errortype[curID, curparam] == "CV"){
+              curerrormeasure = (curmean*curerrormeasure)^2
+            }
 
-          if(curdistribution == "normal"){
-            usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rnorm(1, mean = curmean, sd = sqrt(curerrormeasure))
-          }
+            if(curdistribution == "normal"){
+              usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rnorm(1, mean = curmean, sd = sqrt(curerrormeasure))
+            }
 
-          if(curdistribution == "gamma"){
-            usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rgamma(1, scale = curerrormeasure/curmean, shape = curmean^2/curerrormeasure)
+            if(curdistribution == "gamma"){
+              usintemp$prop[usintemp$prop$ID == curID, curparam] = stats::rgamma(1, scale = curerrormeasure/curmean, shape = curmean^2/curerrormeasure)
+            }
           }
         }
+      } # Done drawing the parameter values
 
-
+      if(replacetiny!=0){
+        # Replace the tiny values drawn to avoid numerical errors.
+        usintemp$prop[
+          which(usintemp$prop[,parameters] > 0 & usintemp$prop[,parameters] < replacetiny),
+          parameters] = replacetiny
 
       }
-    } # Done drawing the parameter values
 
-    if(replacetiny!=0){
-      # Replace the tiny values drawn to avoid numerical errors.
-      usintemp$prop[
-        which(usintemp$prop[,parameters] > 0 & usintemp$prop[,parameters] < replacetiny),
-        parameters] = replacetiny
-
+      # Now decide whether draw should be accepted
+      if(rejectnegconsump){
+        if(
+          all(
+            comana(usintemp)$consumption[TLcheddar(usintemp$imat) != 1] >= 0
+            )
+          ) accept = 1
+      }else{
+        accept = 1
+      }
     }
-
     communitylist[[i]] = usintemp
 
     if(returnresults){
