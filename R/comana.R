@@ -155,5 +155,10 @@ comana <- function(usin,
   if(!checkeqm(whattoreturn,eqmtolerance = eqmtolerance)){
     stop("Equilibrium not successfully reached at tolerance provided. Check the calculations or increase the tolerance.")
   }
+
+  if(any(consumption[TLcheddar(imat) != 1] < 0)){
+    warning("Negative consumption is being predictd. This web probably does not have a stable solution.")
+  }
+
   return(whattoreturn)
 }
