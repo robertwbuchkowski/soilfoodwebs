@@ -367,11 +367,12 @@ renamenode <- function(COMM, oldname,newname){
 #' Check the carbon flux equilibrium output by comana.
 #'
 #' @param cares The output from comana.
+#' @param eqmtolerance A value used to set the equilibrium tolerance for the food web verification. If NA, the default value used by the function all.equal is used, which is approximately 1.5e-8.
 #' @return Boolean: Is the community at equilibrium with inputs to the first trophic level?
 #' @examples
 #' checkeqm(comana(intro_comm))
 #' @export
-checkeqm <- function(cares){
+checkeqm <- function(cares, eqmtolerance = NA){
 
   netchange = # Consumption rate
     cares$usin$prop$a*cares$usin$prop$p*rowSums(cares$fmat) -
@@ -388,5 +389,9 @@ checkeqm <- function(cares){
   # Get rid of basal trophic levels where inputs are OK
   netchange = netchange[TLcheddar(cares$usin$imat) != 1]
 
-  return(all.equal(unname(netchange),rep(0, length(netchange))))
+  if(is.na(eqmtolerance)){
+    return(all.equal(unname(netchange),rep(0, length(netchange))))
+  }else{
+    return(all.equal(unname(netchange),rep(0, length(netchange)), tolerance = eqmtolerance))
+  }
 }

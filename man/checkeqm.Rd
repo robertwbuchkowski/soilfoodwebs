@@ -4,10 +4,12 @@
 \alias{checkeqm}
 \title{Check the carbon flux equilibrium output by comana.}
 \usage{
-checkeqm(cares)
+checkeqm(cares, eqmtolerance = NA)
 }
 \arguments{
 \item{cares}{The output from comana.}
+
+\item{eqmtolerance}{A value used to set the equilibrium tolerance for the food web verification. If NA, the default value used by the function all.equal is used, which is approximately 1.5e-8.}
 }
 \value{
 Boolean: Is the community at equilibrium with inputs to the first trophic level?

@@ -20,7 +20,8 @@ comana(
   fwdlwdcust = NULL,
   arrowlog = F,
   arrowsizerange = c(0.1, 30),
-  rmzeros = T
+  rmzeros = T,
+  eqmtolerance = NA
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ comana(
 \item{arrowsizerange}{The range of arrow sizes in the food web plot.}
 
 \item{rmzeros}{A Boolean determining whether trophic species with zero biomass should be removed from the community before analysis.}
+
+\item{eqmtolerance}{A value used to set the equilibrium tolerance for the food web verification. If NA, the default value used by the function all.equal is used, which is approximately 1.5e-8.}
 }
 \value{
 A list of consumption rates, carbon mineralization, nitrogen mineralization, carbon and nitrogen consumption rates, and the modified community if zeros where removed or sorting occurred.

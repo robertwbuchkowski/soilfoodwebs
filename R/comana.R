@@ -16,6 +16,7 @@
 #' @param arrowlog Boolean: Should relative arrow widths in the food web plot be on a log scale?
 #' @param arrowsizerange The range of arrow sizes in the food web plot.
 #' @param rmzeros A Boolean determining whether trophic species with zero biomass should be removed from the community before analysis.
+#' @param eqmtolerance A value used to set the equilibrium tolerance for the food web verification. If NA, the default value used by the function all.equal is used, which is approximately 1.5e-8.
 #' @return A list of consumption rates, carbon mineralization, nitrogen mineralization, carbon and nitrogen consumption rates, and the modified community if zeros where removed or sorting occurred.
 #' @examples
 #' comana(intro_comm)
@@ -36,7 +37,8 @@ comana <- function(usin,
                    fwdlwdcust = NULL,
                    arrowlog = F,
                    arrowsizerange = c(0.1,30),
-                   rmzeros = T
+                   rmzeros = T,
+                   eqmtolerance = NA
 ){
 
   # Check the community:
@@ -150,8 +152,8 @@ comana <- function(usin,
                       Nfmat = Nfmat, # Nitrogen feeding matrix negative values are turned to zero and indicate too much cannibalism for equilibrium
                       usin =list(imat = imat, prop = prop)) # revised community with sorted trophic levels
 
-  if(!checkeqm(whattoreturn)){
-    stop("Equilibrium not successfully reached. Check the calculations.")
+  if(!checkeqm(whattoreturn,eqmtolerance = eqmtolerance)){
+    stop("Equilibrium not successfully reached at tolerance provided. Check the calculations or increase the tolerance.")
   }
   return(whattoreturn)
 }
