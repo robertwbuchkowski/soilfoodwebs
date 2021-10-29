@@ -3,6 +3,7 @@
 export(Aijfcn)
 export(CNsim)
 export(Cijfcn)
+export(Jacobsindex)
 export(TLcheddar)
 export(TLsort)
 export(calc_smin)
