@@ -15,7 +15,7 @@ comtrosp(
 \arguments{
 \item{usin}{The community were you are combining trophic species}
 
-\item{selected}{Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the most similar trophic species are combined.}
+\item{selected}{Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the two most similar trophic species are combined. Similarity is determined by shared feeding relationships.}
 
 \item{deleteCOMBOcannibal}{Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?}
 

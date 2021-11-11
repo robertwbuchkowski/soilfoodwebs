@@ -1,7 +1,7 @@
 #' A function to combine trophic species.
 #'
 #' @param usin The community were you are combining trophic species
-#' @param selected Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the most similar trophic species are combined.
+#' @param selected Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the two most similar trophic species are combined. Similarity is determined by shared feeding relationships.
 #' @param  deleteCOMBOcannibal Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?
 #' @param allFEEDING1 Boolean: Do you want to return all feeding preferences to 1 (T), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (F)?
 #' @param newname The name you want to use for the combined trophic species. Default replaces combines the names of the original trophic species divided by "/".
@@ -30,58 +30,18 @@ comtrosp <- function(usin,
                      allFEEDING1 = F,
                      newname = NA
 ){
-  seltf = !any(is.na(selected))
-  if(seltf == T & length(selected) > 2){
-    # If the length is longer than 2, we need to run the function comtrosp_backend multiple times.
-    NTC = length(selected) - 1 # Number of combinations
-    usin_temp = usin # Save temporary file
-    for(NTCsel in 1:NTC){ # Loop over the combinations
-      # Find the new combination
-      newTS = usin_temp$prop$ID[grepl(selected[1],usin_temp$prop$ID)]
-      # Build a temporary selected vector
-      selected_temp = c(newTS,selected[NTCsel + 1])
-      # Run combination
-      usin_temp = comtrosp_backend(usin = usin_temp, seltf = seltf, selected = selected_temp, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1)
-    }
-  }else{
-    # Only need to run the function once
-    usin_temp = comtrosp_backend(usin = usin, seltf = seltf, selected = selected, deleteCOMBOcannibal = deleteCOMBOcannibal, allFEEDING1 = allFEEDING1)
-  }
-
-  if(!is.na(newname)){
-    # ID combined pool:
-    parname = usin_temp$prop$ID[grepl(selected[1],usin_temp$prop$ID)]
-
-    usin_temp = renamenode(usin_temp,
-                           oldname = parname,
-                           newname = newname)
-  }
-
-  return(checkcomm(usin_temp))
-}
-
-#' A function to combine trophic species with only two seltf options available
-#'
-#' @param usin, # The community were you are combining trophic species
-#' @param seltf Boolean: Do you want to select the trophic species to combine or do you want to combine two based on their similarity?
-#' @param selected A vector of two trophic species to combine. The default is NA, which is not appropriate if seltf is T.
-#' @param  deleteCOMBOcannibal Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?
-#' @param allFEEDING1 Boolean: Do you want to return all feeding preferences to 1 (T), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (F)?
-#' @return The new community with the seltf or most similar trophic species combined.
-
-comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal = F, allFEEDING1 = F){
-
   imat = usin$imat
   prop = usin$prop
+  Nnodes = dim(imat)[1]
 
-  imat_mod_update = imat_mod = imat # Create some replicates of the feeding matrix to store intermediate steps
+  imat_mod = imat # Create some replicates of the feeding matrix to store intermediate steps
 
   # If seltf trophic species are combined, then just set them in the idmax, which is the matrix identifying their position in the web
-  if(seltf){
-    idmax = matrix(which(rownames(imat) %in% selected), ncol = 2, nrow = 1)
+  if(!any(is.na(selected))){
+    idmax = which(rownames(imat) %in% selected)
   }else{
 
-    # If you don't select the species to be combined, then the most similar species are calcualted by comparing the number of matching trophic links
+    # If you don't select the species to be combined, then the most similar species are calculated by comparing the number of matching trophic links
 
     # Matrix to save how similar each pair of species are
     simidx = matrix(NA, ncol = dim(imat_mod)[1], nrow = dim(imat_mod)[1])
@@ -105,32 +65,15 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
     if(dim(idmax)[1] > 1){
       idmax = idmax[sample(seq(1,dim(idmax)[1]),1),]
     }
-
+    # Clean up the names. Product is the row/column numbers of the species to be combined.
+    idmax = unname(idmax)
   }
 
-  # The next section of code combines the two trophic species listed in idmax
-
-  # Take the biomass average of their feeding
-  imat_mod[idmax,] = imat[idmax,]*prop$B[idmax]/sum(prop$B[idmax])
-
-  imat_mod[,idmax[1]] = imat[,idmax[1]]*prop$B[idmax[1]]/sum(prop$B[idmax])
-
-  imat_mod[,idmax[2]] = imat[,idmax[2]]*prop$B[idmax[2]]/sum(prop$B[idmax])
-
-  # Combine them
-  imat_mod_update[idmax[1],] = imat_mod[idmax[1],] + imat_mod[idmax[2],]
-  imat_mod_update[,idmax[1]] = imat_mod[,idmax[1]] + imat_mod[,idmax[2]]
-
-  # Remove old species
-  imat_mod_update = imat_mod_update[-idmax[2],]
-  imat_mod_update = imat_mod_update[,-idmax[2]]
-
   #Update name: The new name is name1/name2
-  newname1 = rownames(imat_mod_update)[idmax[1]] = colnames(imat_mod_update)[idmax[1]] = paste0(colnames(imat_mod)[idmax], collapse = "/")
-
-  # Rebalance the feeding relationships to 1 if asked
-  if(allFEEDING1){
-    imat_mod_update[imat_mod_update > 0] = 1
+  if(!is.na(newname)){
+    newname1 = newname
+  }else{
+    newname1 = paste0(colnames(imat)[idmax], collapse = "/")
   }
 
   # Modify the parameters: Weighted average based on biomass
@@ -142,7 +85,7 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
   }
 
   # Find the properties of the combined trophic species
-  prop_mod = prop[prop$ID %in% colnames(imat_mod)[idmax],]
+  prop_mod = prop[prop$ID %in% colnames(imat)[idmax],]
 
   # Create an empty property vector to fill with the new data
   emptyprop = prop[1,]
@@ -157,9 +100,9 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
   if(length(unique(prop_mod$canIMM))>1) warning("Combined trophic species have different parameters for canIMM. Choosing canIMM == 1")
 
   emptyprop[,"isDetritus"] = max(prop_mod$isDetritus)
-  if(length(prop_mod$isDetritus > 0)<2) warning("Combined trophic species have different parameters for isDetritus Choosing isDetritus == 1")
+  if(length(unique(prop_mod$isDetritus)) > 1) warning("Combined trophic species have different parameters for isDetritus. Choosing isDetritus == 1")
 
-  emptyprop[,"DetritusRecycling"] = sum(prop_mod$DetritusRecycling) # Adding the contributions of detritus if combining two detrial pools
+  emptyprop[,"DetritusRecycling"] = sum(prop_mod$DetritusRecycling) # Adding the contributions of detritus if combining detritus pools
 
   emptyprop[,"isPlant"] = max(prop_mod$isPlant)
   if(length(unique(prop_mod$isPlant))>1) warning("Combined trophic species have different parameters for isPlant Choosing isPlant == 1")
@@ -171,25 +114,75 @@ comtrosp_backend <- function(usin, seltf = F, selected = NA, deleteCOMBOcannibal
   prop_update[,1] = addlevel(prop_update[,1], newlevel = newname1)
 
   # Add in the new row for the new species to replace the first species that was combined
-  prop_update[prop_update$ID %in% colnames(imat_mod)[idmax[1]],-1] = emptyprop[,-1]
-  prop_update[prop_update$ID %in% colnames(imat_mod)[idmax[1]],1] = newname1
+  prop_update[idmax[1],] = emptyprop
+  prop_update[idmax[1],"ID"] = newname1
 
-  # Remove the second species that was combined
-  prop_update = prop_update[!(prop_update$ID %in% colnames(imat_mod)[idmax[2]]),]
+  # Remove all other species
+  prop_update = prop_update[-idmax[-1],]
 
-  # Set cannibalism to zero
-  if(deleteCOMBOcannibal){
-    imat_mod_update = as.matrix(imat_mod_update)
-    diag(imat_mod_update)[which(rownames(imat_mod_update) %in% newname1)] = 0
-  }
 
   # Reset DetritusRecycling so it sums to one:
   if(sum(prop_update$DetritusRecycling) != 0){
     prop_update$DetritusRecycling = prop_update$DetritusRecycling/sum(prop_update$DetritusRecycling)
   }
 
-  # Double check that imat and prop have the same order
-  stopifnot(all(colnames(imat_mod_update) == prop_update$ID))
+  # The next section of code combines the trophic species listed in idmax in the imat
 
-  return(list(imat = imat_mod_update, prop = prop_update))
+  # Calculate diet proportions in the original model:
+
+  dietprop = (imat * matrix(prop$B, nrow = Nnodes, ncol = Nnodes,
+                            byrow = T)/rowSums(imat * matrix(prop$B, nrow = Nnodes,
+                                                             ncol = Nnodes, byrow = T)))
+
+  # Set NA as zero
+  dietprop[is.na(dietprop)] = 0
+
+  dietprop2 = dietprop
+  # Combine the trophic species: Predators of them have their diet portions summed, the combined trophic species have prey diet portions summed
+  # Result is saved in the row and column of the first species to be combined
+  dietprop2[,idmax[1]] = rowSums(dietprop[,idmax])
+  dietprop2[idmax[1],] = colSums(dietprop[idmax,])/length(idmax)
+
+  # Take any feeding within the combined trophic species and reapply it
+  dietprop2[idmax[1],idmax[1]] = sum(dietprop2[idmax[1],idmax])
+
+  # Remove combined trophic species (leave the one that received the new parameters)
+  dietprop2 = dietprop2[-idmax[-1],]
+  dietprop2 = dietprop2[,-idmax[-1]]
+
+  # Update the name:
+  rownames(dietprop2)[idmax[1]] = colnames(dietprop2)[idmax[1]] = newname1
+
+  # Convert diet proportions back into feeding preferences with new properties matrix
+  imat_update = dietprop2/matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = T)
+
+
+  # Confirm that the diet proportions turned out right
+  checkdietprop = (imat_update * matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = T)/rowSums(imat_update * matrix(prop_update$B, nrow = dim(prop_update)[1],ncol = dim(prop_update)[1], byrow = T)))
+  checkdietprop[is.na(checkdietprop)] = 0
+
+  if(!all.equal(checkdietprop, dietprop2)){
+    warning("Diet proportion NOT maintained by combining trophic species. Check the math unless allFEEDING1 is true.")
+  }
+
+  # Rebalance the feeding relationships to 1 if asked
+  if(allFEEDING1){
+    imat_update[imat_update > 0] = 1
+  }
+
+  # Set cannibalism to zero
+  if(deleteCOMBOcannibal){
+    imat_update = as.matrix(imat_update)
+    diag(imat_update)[which(rownames(imat_update) %in% newname1)] = 0
+  }
+
+  # Double check that imat and prop have the same order
+  if(!all(colnames(imat_update) == prop_update$ID)){
+    stop("New species names not lining up. Check calculations.")
+  }
+
+  usin_temp = list(imat = imat_update,
+                   prop = prop_update)
+
+  return(checkcomm(usin_temp))
 }
