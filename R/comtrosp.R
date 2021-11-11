@@ -38,6 +38,12 @@ comtrosp <- function(usin,
 
   # If seltf trophic species are combined, then just set them in the idmax, which is the matrix identifying their position in the web
   if(!any(is.na(selected))){
+
+    # Check to make sure all selected nodes are in the web
+    if(!all(selected %in% prop$ID)){
+      stop("All selected species must be in the food web.")
+    }
+
     idmax = which(rownames(imat) %in% selected)
   }else{
 
@@ -141,7 +147,7 @@ comtrosp <- function(usin,
   # Combine the trophic species: Predators of them have their diet portions summed, the combined trophic species have prey diet portions summed
   # Result is saved in the row and column of the first species to be combined
   dietprop2[,idmax[1]] = rowSums(dietprop[,idmax])
-  dietprop2[idmax[1],] = colSums(dietprop[idmax,])/length(idmax)
+  dietprop2[idmax[1],] = colSums(dietprop[idmax,])/sum(dietprop[idmax,])
 
   # Take any feeding within the combined trophic species and reapply it
   dietprop2[idmax[1],idmax[1]] = sum(dietprop2[idmax[1],idmax])
@@ -152,6 +158,11 @@ comtrosp <- function(usin,
 
   # Update the name:
   rownames(dietprop2)[idmax[1]] = colnames(dietprop2)[idmax[1]] = newname1
+
+  # Make sure diet proportions are still summing to 1:
+  if(!all(rowSums(dietprop2) %in% c(0,1))){
+    stop("Error calculating diet proportions. Check the math unless allFEEDING1 is true.")
+  }
 
   # Convert diet proportions back into feeding preferences with new properties matrix
   imat_update = dietprop2/matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = T)
