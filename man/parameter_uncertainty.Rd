@@ -16,7 +16,8 @@ parameter_uncertainty(
   returnprops = F,
   returnresults = T,
   rejectnegconsump = T,
-  correctstoich = T
+  correctstoich = T,
+  verbose = T
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ parameter_uncertainty(
 \item{rejectnegconsump}{Boolean. Should the draws reject communities with negative consumption rates?}
 
 \item{correctstoich}{Boolean. Do you want to correct the stoichiometry of the community before running the fcntorun? This does NOT correct the community stoichiometry returned in communitylist, so the user can see the original result without the correction applied.}
+
+\item{verbose}{Boolean. Do you want warning messages about the functionality?}
 }
 \value{
 A list of the results. See details.

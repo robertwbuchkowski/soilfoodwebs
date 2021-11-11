@@ -19,7 +19,7 @@
 #'   \item{prop}{The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in kilograms of carbon per hectare and turnover/death rate is in years.}
 #' }
 #' @source \url{https://doi.org/10.1007/BF00260580}
-"CPER"
+"Hunt1987"
 
 #' The soil food webs published for grazed and ungrazed plots in the Shortgrass Steppe long-term research station.
 #'
