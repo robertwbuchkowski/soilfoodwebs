@@ -159,8 +159,13 @@ comtrosp <- function(usin,
   # Update the name:
   rownames(dietprop2)[idmax[1]] = colnames(dietprop2)[idmax[1]] = newname1
 
+
   # Make sure diet proportions are still summing to 1:
-  if(!all(rowSums(dietprop2) %in% c(0,1))){
+  # Select only non-zero row sums
+  checkrowsums = rowSums(dietprop2)
+  checkrowsums = checkrowsums[checkrowsums != 0]
+
+  if(!all.equal(unname(checkrowsums), rep(1, length(checkrowsums)))){
     stop("Error calculating diet proportions. Check the math unless allFEEDING1 is true.")
   }
 
