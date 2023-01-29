@@ -16,7 +16,7 @@
 #' The key difference from 'corrstoich' is that the prey DO NOT correct their feeding rates to compensate for higher consumption from the predators, so the system can leave equilibrium if a diet shift occurs.
 correction_function <- function(biomasses, cij, CN, p, a, canIMM, dietlimits,diet_correct = T, Conly = F, Immobilizationlimit = Inf){
 
-  Nnodes = length(biomasses)
+  Nnodes = length(biomasses) # The number of nodes in the community
 
   Bpred = matrix(biomasses, ncol = Nnodes, nrow = Nnodes) # A matrix of predators
   Bprey = matrix(biomasses, ncol = Nnodes, nrow = Nnodes, byrow = T) # A matirx of prey
@@ -31,7 +31,7 @@ correction_function <- function(biomasses, cij, CN, p, a, canIMM, dietlimits,die
 
   if(!Conly){
     if(diet_correct){
-      species = which(rowSums(aij*FMAT) < -1e-10  & # Species must have negative Nmin rate that is beyond a tiny value caused by a rounding error in the calaculation.
+      species = which(rowSums(aij*FMAT) < -1e-10  & # Species must have negative Nmin rate that is beyond a tiny value caused by a rounding error in the calculation.
                         apply(aij,1, max) > 0 & # Species must have a food item that gives them a positive nitrogen balance
                         apply(FMAT2 > 0, 1, sum) > 1 & # Species must have more than one food item
                         !canIMM == 1 # The species is not flagged as a species that can immobilize N

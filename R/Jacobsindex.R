@@ -9,12 +9,15 @@
 #' Jacobsindex(intro_comm)
 #' @export
 Jacobsindex = function(usin){
+
+  # Check the community for errors
   usin = checkcomm(usin)
 
-  imat = usin$imat
-  prop = usin$prop
-  Nnodes = dim(imat)[1]
+  imat = usin$imat # Save the feeding matrix
+  prop = usin$prop # Same the property data
+  Nnodes = dim(imat)[1] # Calculate the number of nodes
 
+  # Calculate the components of Jacob's Index r and p.
   r = (imat *matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow = T)/rowSums(imat * matrix(prop$B, nrow = Nnodes,ncol = Nnodes, byrow = T)))
 
   imat2 = imat
@@ -22,12 +25,15 @@ Jacobsindex = function(usin){
 
   p = (imat2 *matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow = T)/rowSums(imat2 * matrix(prop$B, nrow = Nnodes,ncol = Nnodes, byrow = T)))
 
+  # Jacob's index formula
   JI = (r-p)/(r+p-2*p*r)
 
+  # Format the output
   JI = data.frame(JI)
   JI$Predator = row.names(JI)
   rownames(JI) = NULL
 
+  # Reshape the output into a cleaner table
   JI = stats::reshape(data=JI, idvar="Predator",
                varying = colnames(JI)[colnames(JI) != "Predator"],
                times = colnames(JI)[colnames(JI) != "Predator"],

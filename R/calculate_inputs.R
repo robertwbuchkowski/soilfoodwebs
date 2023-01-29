@@ -19,19 +19,20 @@ calculate_inputs <- function(usin,
                              toround = T
 ){
 
+  # Get the parameter values for the model and the mineralization rates of carbon and nitrogen
   parEI = getPARAMS(usin = usin,
                     DIETLIMTS = DIETLIMTS,
                     diet_correct = diet_correct,
                     Conly = Conly,
                     returnCNmin = T)
 
-  Cmin = parEI$Cmin
-  Nmin = parEI$Nmin
+  Cmin = parEI$Cmin # Save the carbon mineralization rate
+  Nmin = parEI$Nmin # Save the nitrogen mienralization rate
 
   # Identify detritus using the detritus recycling variable
   DetritusRecycling = parEI$PARS[grepl("DetritusRecycling_",names(parEI$PARS))]
 
-  # Get IN
+  # Get nitrogen input rates:
   IN = parEI$PARS[grepl("IN_",names(parEI$PARS))]
   names(IN) = names(Cmin)
 
@@ -82,6 +83,7 @@ calculate_inputs <- function(usin,
     }
   }
 
+  # The next section prints out the results into the console using if statements to figure out what the include
   if(toround){
     if(verbose){
       print("------------------------------------------------")

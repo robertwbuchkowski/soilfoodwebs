@@ -46,6 +46,7 @@ getPARAMS <- function(usin,
 
   Nnodes = dim(usin$imat)[1] # Number of nodes
 
+  # Check to make sure the density-dependence vector is the right length or make a single value a vector of the right length
   if(any(is.na(densitydependence))){
     densitydependence = rep(0, Nnodes)
   }else{
@@ -61,6 +62,7 @@ getPARAMS <- function(usin,
     warning("Some secondary correction happening. Check the code running correction_function")
   }
 
+  # Take the parameter values from the correction_function return
   FMAT = corred$FMAT
   p = corred$p
   a = usin$prop$a
@@ -69,11 +71,12 @@ getPARAMS <- function(usin,
   # Death rate for each node is set my densitydependence. 1 means density dependent, 0 means density independent.
   d = densitydependence*usin$prop$d/usin$prop$B + (1-densitydependence)*usin$prop$d
 
-  B = usin$prop$B
-  isDetritus = usin$prop$isDetritus
-  DetritusRecycling = usin$prop$DetritusRecycling
-  isPlant = usin$prop$isPlant
-  canIMM = usin$prop$canIMM
+  # Get values from the community that are needed in the list of parameters:
+  B = usin$prop$B # Equilibrium biomass
+  isDetritus = usin$prop$isDetritus # Detritus ID
+  DetritusRecycling = usin$prop$DetritusRecycling # Detritus Recycling
+  isPlant = usin$prop$isPlant # Plant ID
+  canIMM = usin$prop$canIMM # Can the node immobilize N?
 
   # Check to make sure userdefinedinputs is either 1 or the same length as the nodes
   stopifnot(length(userdefinedinputs) %in% c(1, length(B)))
@@ -85,7 +88,9 @@ getPARAMS <- function(usin,
 
   # Calculate IN parameters for equilibrium
   IN = rep(0, length(B))
-  delta = a*p*rowSums(FMAT) - colSums(FMAT) - (densitydependence*d*B*B + (1-densitydependence)*d*B)
+  delta = a*p*rowSums(FMAT) - colSums(FMAT) - (densitydependence*d*B*B + (1-densitydependence)*d*B) # This calculates the extra C needed to be input to keep the change over time zero when the equilibrium biomass (B) is put into the differential equation
+
+  # Fix the delta term for detritus, because detritus receives inputs from within the food web as necromass and excreta
   delta[isDetritus>0] =
     delta[isDetritus>0] +
     DetritusRecycling[isDetritus>0]*
@@ -110,7 +115,8 @@ getPARAMS <- function(usin,
     }else{
       IN_plant = 0 # Zero if there are no plants
     }
-    # Get the inorganic nitrogen parameters (two of these must be values):
+
+    # Get the inorganic nitrogen parameters (two of the possible variables must be values):
     Nmin = sum(comana(usin, shuffleTL = F)$Nminmat)
     INN = inorganic_nitrogen_properties$INN
     if(!is.na(INN)){
@@ -121,6 +127,7 @@ getPARAMS <- function(usin,
     eqmN = inorganic_nitrogen_properties$eqmN
     if(!is.na(eqmN)){if(eqmN < 0) stop("eqmN (equilibrium nitrogen) should be positive")}
 
+    # Depending on the variable that is unknown, the if statements below choose the correct formula to calculate the third parameter.
     if(is.na(INN)){
       INN = IN_plant + q*eqmN - Nmin
     }
@@ -168,8 +175,10 @@ getPARAMS <- function(usin,
     pin = usin$prop$p
   }
 
+  # Output the parameter list
   PARS = c(Nnodes,d,a,pin,B,CN,isDetritus, isPlant,DetritusRecycling, canIMM, densitydependence,cij,DIETLIMTS, IN, r_i, sum(diet_correct), sum(Conly), has_inorganic_nitrogen, cpn,INN,q, NA)
 
+  # Add the names to the parameter list
   names(PARS) = c("Nnodes",
                   paste0("d_", 1:Nnodes),
                   paste0("a_", 1:Nnodes),
@@ -209,6 +218,7 @@ getPARAMS <- function(usin,
                     paste0(colnames(usin$imat),"N"))
   }
 
+  # Calculate the carbon and nitrogen mineralization to return if the function is set to return them:
   if(returnCNmin){
     Cmin = a*(1-p)*rowSums(FMAT)
     Cfaeces = (1-a)*rowSums(FMAT)

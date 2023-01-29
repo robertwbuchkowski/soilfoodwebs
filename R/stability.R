@@ -13,15 +13,18 @@
 #' @export
 stability <- function(usin, correctstoich = T, forceProd = F, smin = 1, method = "Jacobian"){ # Function only requires the community inputs
 
+  # Confirm that the type of stability test is correct
   if(!method %in% c("Jacobian", "Moorecobian")) stop("method must be either Jacobian or Moorecobian")
 
+  # Correc the stoichiometry of the community if set
   if(correctstoich){
     usin = corrstoich(usin, forceProd = forceProd)
   }
 
-  imat = usin$imat
-  prop = usin$prop
+  imat = usin$imat # Get the feeding matrix
+  prop = usin$prop # Get the node properties
 
+  # Warn if more than 1 plant is included that the function is not set up for this yet
   try(if(sum(prop$isPlant) > 1) warning("Function is only set up for 1 plant pool at the current time"))
 
   # Rescale DetritusRecycling to sum to 1

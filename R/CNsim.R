@@ -46,6 +46,7 @@ CNsim <- function(usin,
     usin = corrstoich(usin, forceProd = !diet_correct, dietlimits = DIETLIMTS)
   }
 
+  # Get the parameters for the simulation. See the function 'getPARAMS' for calculation details
   parEin = getPARAMS(usin = usin,
                      DIETLIMTS = DIETLIMTS,
                      diet_correct = diet_correct,
@@ -55,6 +56,7 @@ CNsim <- function(usin,
                      densitydependence = densitydependence,
                      inorganic_nitrogen_properties = inorganic_nitrogen_properties)
 
+  # Find the node name of the detritus experiment if it will be run
   if(is.character(DETEXPT)){
     DETEXPT = which(usin$prop$ID == DETEXPT)
   }
@@ -64,6 +66,7 @@ CNsim <- function(usin,
     warning("Making the starting detritus experiment 100 units of C.")
   }
 
+  # Save the parameters and starting values for the simulation
   PARS = parEin$PARS
   y0 = parEin$yint
 
@@ -72,7 +75,7 @@ CNsim <- function(usin,
     y0["DetExptState"] = DETEXPTSTART
   }
 
-  # Fix the starting modifier vector
+  # Fix the starting modifier vector if one value is entered
   if(length(start_mod) == 1){
     if(is.na(start_mod)){
       start_mod = rep(1, PARS["Nnodes"])
@@ -118,7 +121,7 @@ CNsim <- function(usin,
 
   output = data.frame(output)
 
-  # Prepare for naming:
+  # Prepare for naming of the output variables:
 
   Nnodes = PARS["Nnodes"]
 

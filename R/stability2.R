@@ -32,8 +32,10 @@ stability2 <- function(usin,
                        forstabilityonly = T,
                        densitydependence = NA){
 
+  # Correct the stoichiometry using the built in function only if the model is not carbon only
   if(!Conly) usin = corrstoich(usin, dietlimits = DIETLIMTS)
 
+  # Get the parameters from the model. See the 'getPARAMS' function for functionality.
   PARSandY = getPARAMS(usin = usin,
                        DIETLIMTS = DIETLIMTS,
                        diet_correct = diet_correct,
@@ -44,13 +46,15 @@ stability2 <- function(usin,
                        inorganic_nitrogen_properties = inorganic_nitrogen_properties
   )
 
+  # Save the parameters
   parameters = PARSandY$PARS
 
   parameters["forstability"] = ifelse(forstabilityonly, 1,0)
   parameters["keepallnitrogen"] = 0
 
-  Nnodes = parameters["Nnodes"]
+  Nnodes = parameters["Nnodes"] # The number of nodes in the community
 
+  # Add in inorganic nitrogen and/or detritus depending on the function input values
   if(forstabilityonly){
     if(has_inorganic_nitrogen){
       YINT = PARSandY$yint[c(1:Nnodes,length(PARSandY$yint))]
@@ -66,6 +70,7 @@ stability2 <- function(usin,
     }
   }
 
+  # Calculate the Jacobian matrix. This matrix is used in the stability test, because the maximum eigenvalue (in the return list) gives insight into stability
   J = rootSolve::jacobian.full(y=YINT,
                                func = foodwebode,
                                parms = parameters)

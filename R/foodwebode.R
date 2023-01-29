@@ -9,6 +9,8 @@
 #' @seealso
 #' Use this function inside \code{\link{CNsim}}, \code{\link{stability2}}, and \code{\link{calculate_inputs}}. See the documentation for these functions.
 foodwebode <- function(t,y,pars){
+
+  # Rename and save the parameters into individual vectors that are easier to work with. Naming convention is set in the function 'getPARAMS'
   Nnodes = pars[1]
   d = pars[grepl("d_",names(pars))]
   a = pars[grepl("a_",names(pars))]
@@ -29,6 +31,7 @@ foodwebode <- function(t,y,pars){
   # Load state variables:
   B = y[1:Nnodes]
 
+  # Get the nitrogen biomass--add inorganic nitrogen if set
   if(pars["keepallnitrogen"]){
     Nbiomass = y[(Nnodes+1):(2*Nnodes)]
   }else{
@@ -85,6 +88,9 @@ foodwebode <- function(t,y,pars){
   FMAT = Corred$FMAT
   p = Corred$p
 
+  # Below calculates the change in each pool after the time step. It uses the matrix and vector for each parameter and feeding relationship to run all the differential equations in one line for each element
+
+  # This is the carbon equation:
   delta = a*p*rowSums(FMAT) - colSums(FMAT) - densitydependence*d*B^2 - (1-densitydependence)*d*B + IN + r_i*B + plant_growthC
   delta[isDetritus>0] = delta[isDetritus>0] + DetritusRecycling[isDetritus>0]*sum(c((1-a)*rowSums(FMAT), (densitydependence*d*B^2 + (1-densitydependence)*d*B))) # add back in dead biomass and rejected food to detritus
 
@@ -92,7 +98,7 @@ foodwebode <- function(t,y,pars){
   deltaN = a*FMAT%*%(1/CN) - colSums(FMAT)/CN - densitydependence*d*(B^2)/CN - (1-densitydependence)*d*B/CN + (IN + r_i*B)/IN_CN + plant_growthN
   deltaN[isDetritus>0] = deltaN[isDetritus>0] + DetritusRecycling[isDetritus>0]*sum(c((1-a)*FMAT%*%(1/CN), (densitydependence*d*(B^2)/CN + (1-densitydependence)*d*B/CN))) # add back in dead biomass and rejected food to detritus
 
-  # calculate k, which is the sum of all consumed detritus divided by the detritus pool size
+  # calculate the decomposition constant (k), which is the sum of all consumed detritus divided by the detritus pool size
   if(sum(isDetritus > 0) > 1){
     k = colSums(FMAT[,isDetritus > 0])/B[isDetritus > 0]
   }else{
@@ -133,7 +139,7 @@ foodwebode <- function(t,y,pars){
   # Check to make sure the user isn't trying to run stability AND keep all the nitrogen pools:
   if(pars["forstability"] & pars["keepallnitrogen"]) stop("You cannot check stability and keep all the nitrogen state variables. This will produce a Jacobian that is not full rank.")
 
-  # Calculate what to return:
+  # Calculate what to return using if statements to figure out which pools are included in the model
   if(pars["forstability"]){
     if(!is.na(DetExpt)) stop("Cannot run a detritus experiment and test stability at the same time.")
 

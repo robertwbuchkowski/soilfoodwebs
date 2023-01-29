@@ -13,18 +13,23 @@ calc_smin <- function(usin){
   usin = checkcomm(usin)
 
   # Start the calculations:
-  Smin = 1
+  Smin = 1 # Set the starting value for Smin at 1
   stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
+
+  # Increase Smin until the community is stable
   while(stabval >= 0){
     Smin = Smin*10
     stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
 
   }
 
+  # Decrease Smin until the community becomes unstable
   while(stabval < 0){
     Smin = Smin/10
     stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
   }
+
+  # Increase Smin again until it is stable, this is the final step
   while(stabval >=0){
     Smin = Smin+Smin
     stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)

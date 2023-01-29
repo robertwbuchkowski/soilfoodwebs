@@ -35,7 +35,7 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
   Nnodes = dim(usin$imat)[1]
   Nnames = usin$prop$ID
 
-  # Turn single selections into matrices:
+  # Turn single values into matrices that are compatible with the community:
   if(length(distribution) == 1){
     distribution = matrix(distribution, nrow = Nnodes, ncol = length(parameters), dimnames = list(Nnames, parameters))
   }
@@ -48,6 +48,7 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
     errortype = matrix(errortype, nrow = Nnodes, ncol = length(parameters), dimnames = list(Nnames, parameters))
   }
 
+  # Get the parameter mean values and set their names correctly
   meanvalues = as.matrix(usin$prop[,parameters])
   rownames(meanvalues) = usin$prop$ID
   colnames(meanvalues) = parameters
@@ -57,6 +58,7 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
     c(dim(distribution) == c(Nnodes, length(parameters)), dim(errormeasure) == c(Nnodes, length(parameters)),dim(errortype) == c(Nnodes, length(parameters)))
   )) stop("Distribution, errormeasure, and errortype all need to be length 1 or have the dimensions number of nodes x length of parameters.")
 
+  # Build two empty lists for the communities and the results of the analysis
   communitylist <- vector(mode = "list", length = replicates)
 
   resultslist <- vector(mode = "list", length = replicates)
@@ -142,6 +144,7 @@ parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000
     }
     communitylist[[i]] = usintemp
 
+    # Save the results of the analysis. This is a series of if statements to ask which of the functions should be run.
     if(returnresults){
 
       # Correct the stoichiometry if requested

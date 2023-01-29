@@ -159,6 +159,7 @@ Aijfcn <- function(usin){
   FMAT2 = FMAT
   FMAT2[FMAT2>0] = 1
 
+  # Below matricies are multipled to calculate the net excess or deficit of nitrogen in the organisms diet using their C:N raito and the C:N ratio of the food that they consume.
   Aij = (matrix(1/usin$prop$CN, nrow = Nnodes, ncol = Nnodes, byrow = T) - matrix(usin$prop$p/usin$prop$CN, nrow=Nnodes, ncol = Nnodes))*matrix(usin$prop$a, nrow=Nnodes, ncol = Nnodes)*FMAT2
 
   return(Aij)
@@ -178,13 +179,13 @@ Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires t
   # Check the community
   usin = checkcomm(usin, shuffleTL = shuffleTL, rmzeros = rmzeros)
 
-  imat = usin$imat
-  prop = usin$prop
+  imat = usin$imat # Feeding matrix
+  prop = usin$prop # Properties of the species
 
   Nnodes = dim(imat)[1] # Number of nodes
 
   Bpred = matrix(prop$B, ncol = Nnodes, nrow = Nnodes) # A matrix of predators
-  Bprey = matrix(prop$B, ncol = Nnodes, nrow = Nnodes, byrow = T) # A matirx of prey
+  Bprey = matrix(prop$B, ncol = Nnodes, nrow = Nnodes, byrow = T) # A matrix of prey
   fmat = comana(usin, shuffleTL = F)$fmat # Get the consumption matrix (units = gC/ time)
   cij = fmat/(Bpred*Bprey) # Get the consumption rate matrix (units 1/ (gC * time))
   return(cij) # Return the consumption rates (gC^-1 time^-1)
