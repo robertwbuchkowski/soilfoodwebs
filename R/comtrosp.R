@@ -159,6 +159,8 @@ comtrosp <- function(usin,
   # Update the name:
   rownames(dietprop2)[idmax[1]] = colnames(dietprop2)[idmax[1]] = newname1
 
+  # Replace NA created when combining species without food resources:
+  dietprop2[is.na(dietprop2)] = 0
 
   # Make sure diet proportions are still summing to 1:
   # Select only non-zero row sums

@@ -40,29 +40,11 @@ The basis of the `soilfoodwebs` package is a community, which contains two eleme
 
 This vignette will contain the code to build a simple 5 trophic species (i.e., node) community from scratch and then run it through all the analyses included in the package. A different community is included as an example in the package, called `intro_comm`.
 
-### Building the interaction matrix:
-The interaction matrix contains feeding preferences for trophic species on each other. Our example community will contain the following trophic species whose names we will save as a vector `sp_names = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus")`.
-
-We will build a matrix so that the Predator eats both prey. Prey1 eats both Microbes and Detritus, while Prey2 only eats Detritus. Microbes eat Detritus. 
-
-At this point we will assume that species with multiple prey eat them based on their relative biomass, so diet composition matches prey composition (Moore and de Ruiter, 2012). This assumption could be modified by setting the diet ratios using values other than 1. For example, to make the predator eat Prey1 twice as as Prey2 relative to their biomass the first row of the matrix `imat` would be `c(0,2,1,0,0)`. Note that this does *not* mean that the predator will eat twice as much of Prey1 as Prey2 unless they have the same biomass.
-
-```{r}
-sp_names = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus")
-feedingmatrix = matrix(c(0,1,1,0,0,
-                         0,0,0,1,1,
-                         0,0,0,0,1,
-                         0,0,0,0,1,
-                         0,0,0,0,0), 
-                       dimnames = list(sp_names, sp_names),
-                       ncol = 5, nrow = 5, byrow = T)
-```
-
 ### Building the properties database:
-Next we will build the properties database. This database must contain all the columns listed below in this example.
+First, we will build the properties database. This database must contain all the columns listed below in this example.
 
 ```{r}
-properties = data.frame(ID = sp_names, # Name
+properties = data.frame(ID = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus"), # Name
                         d = c(1,3,0.5,1.2,0), # Death rate
                     a = c(0.61,0.65,0.45,1,1), # Assimilation efficiency
                     p = c(0.5,0.4,0.3,0.3,1), # Production efficiency for carbon (nitrogen production efficiency is assumed to be 1)
@@ -90,8 +72,55 @@ The `DetritusRecycling` vector should sum to 1 and is the proportion of dead org
 
 The final properties are Boolean supplied to the model as 1 = TRUE or 0 = FALSE. `isDetritus` identifies detritus pools. Detrital pools must have `a==1`, `p==1`, `d==0`, and is the only pool type where `DetritusRecycling` can be non-zero. `isPlant` identifies plant nodes and allows them to gain carbon at a *per capita* rate. This feature is poorly developed and may not be reliable. Finally, `canIMM` identifies trophic species that can immobilize inorganic nitrogen and can therefore have net negative nitrogen mineralization.
 
-### Our community:
-Finally, your combine the two features together into a list that is a community. You can use this community as an input to several functions in this package.
+### Building the interaction matrix:
+The interaction matrix can be build in one of two ways. First, it can be built with a data frame of predator-prey interactions and the predator preference for each prey item. This data frame is added to the function `build_foodweb`, which compiles the interaction matrix and combines it into a list with the properties data frame. Second, you can build the interaction matrix by hand and create the community manually. The second option is described below. 
+
+To build a community using the `build_foodweb` function, you need two data frames: the feeding and the properties. The properties data frame was build in the last section. The feeding data frame always has three columns: Predator, Prey, and Preferences. 
+
+Predator and Prey columns contain the names--as they appear in the properties data frame ID column--of all predator-prey pairs. 
+
+The Preferences column contains a numerical value weighting the relative feeding preferences of each node *after* differences in prey abundance are taken into account. If you want predators to feed in proportion to prey abundance, set all of these to `1` (Moore and de Ruiter, 2012). This assumption could be modified by setting the diet ratios using values other than 1. For example, to make the Predator eat Prey1 twice as as Prey2 relative to their biomass you would put a `2` in the row with `Predator` and `Prey1` and a `1` in the row with `Predator` and `Prey2`. Note that this does *not* mean that the predator will eat twice as much of Prey1 as Prey2 unless they have the same biomass.
+
+In the example community, the Predator eats both prey. Prey1 eats both Microbes and Detritus, while Prey2 only eats Detritus. Microbes eat Detritus. 
+
+```{r}
+# Create a list of feeding relationships:
+feedinglist <- data.frame(Predator = c("Predator", "Predator","Prey1","Prey1", "Prey2", "Microbe"),
+           Prey = c("Prey1", "Prey2", "Microbe", "Detritus", "Detritus", "Detritus"),
+           Preference = c(1,1,1,1,1,1))
+```
+
+### Building the community:
+
+Now you can assemble the community using the `build_foodweb` function:
+
+```{r}
+# Make the community
+
+our_comm <- build_foodweb(feeding = feedinglist,
+                          properties = properties)
+
+# Clean up our working files
+rm(feedinglist)
+```
+
+### Manual community building:
+We can also build the interaction matrix and the community manually.
+
+First, the interaction matrix contains feeding preferences for trophic species on each other. It is formatted with the species names in the row and column names. The rows are the predators and the columns are their prey,so the first row of the matrix below notes that the Predator eats Prey1 and Prey2 in proportion to their biomass.
+
+```{r}
+sp_names = c("Predator", "Prey1", "Prey2", "Microbe", "Detritus")
+feedingmatrix = matrix(c(0,1,1,0,0,
+                         0,0,0,1,1,
+                         0,0,0,0,1,
+                         0,0,0,0,1,
+                         0,0,0,0,0), 
+                       dimnames = list(sp_names, sp_names),
+                       ncol = 5, nrow = 5, byrow = T)
+```
+
+To build the community manually, you combine the two features together into a list with the names `imat` and `prop`.
 
 ```{r}
 # Make the community

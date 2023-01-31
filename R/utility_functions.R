@@ -305,6 +305,9 @@ newnode <- function(COMM, newname, prey = NA, predator = NA, newprops){
   # Add the level of the ID column
   COMM$prop$ID = factor(COMM$prop$ID, levels=c(COMM$prop$ID, newname))
 
+  # Get rid of MutualPred column for now. It will be re-added to the properties when the community is checked below:
+  if("MutualPred" %in% colnames(COMM$prop)) COMM$prop$MutualPred = NULL
+
   # Add the properties to the properties database
   COMM$prop = rbind(COMM$prop,
                     data.frame(ID = newname,
