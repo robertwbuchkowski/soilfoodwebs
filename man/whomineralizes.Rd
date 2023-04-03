@@ -4,10 +4,12 @@
 \alias{whomineralizes}
 \title{Direct and indirect contributions to mineralizations}
 \usage{
-whomineralizes(usin)
+whomineralizes(usin, selected = NULL)
 }
 \arguments{
 \item{usin}{The community in which we want to calculate mineralization rates.}
+
+\item{selected}{A vector of names for which you want to calculate the direct and indirect effects. Default NULL means all of them. Useful for excluding nodes whose removal breaks the community (i.e., basal nodes)}
 }
 \value{
 A table of node effects on mineralization rates.

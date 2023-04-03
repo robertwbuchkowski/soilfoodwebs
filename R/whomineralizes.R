@@ -1,6 +1,7 @@
 #' Direct and indirect contributions to mineralizations
 #'
 #' @param usin The community in which we want to calculate mineralization rates.
+#' @param selected A vector of names for which you want to calculate the direct and indirect effects. Default NULL means all of them. Useful for excluding nodes whose removal breaks the community (i.e., basal nodes)
 #' @return A table of node effects on mineralization rates.
 #' @details
 #' The results are labeled as follows with direct contributions calculated from the full food web and indirect contributions calculated from the food web without that node. Indirect contributions do not include the direct contribution (i.e., it is subtracted).
@@ -17,10 +18,16 @@
 #' # Basic example for the introductory community:
 #' whomineralizes(intro_comm)
 #' @export
-whomineralizes <- function(usin){
+whomineralizes <- function(usin, selected = NULL){
   usin = checkcomm(usin, verbose = F) # Check the community for errors
   Nnodes = dim(usin$imat)[1] # Get the number of nodes
   Nnames = usin$prop$ID # Get the names
+
+  # Select only the chosen nodes:
+  if(!is.null(selected)){
+    if(!all(selected %in% Nnames)) stop("All selected nodes must be present in the community.")
+    Nnames = selected
+  }
 
   res1 <- comana(usin) # Calculate the C and N fluxes
 
@@ -36,6 +43,8 @@ whomineralizes <- function(usin){
     IndirectC = NA, # Save space for indirect
     IndirectN = NA) # Save space for indirect
   rownames(output) = NULL # remove rownames
+
+  output = output[(output$ID %in% Nnames),]
 
   # Calculate the indirect effects by removing a single node from the community and calculating the difference
   for(rmnode in Nnames){
