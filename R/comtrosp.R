@@ -100,7 +100,13 @@ comtrosp <- function(usin,
   emptyprop$B = sum(prop_mod$B)
 
   # The other values are the biomass weighted average
-  emptyprop[,c("d", "a", "p", "CN")] = colSums(prop_mod[,c("d", "a", "p", "CN")]*prop_mod$B/sum(prop_mod$B))
+  emptyprop$d = sum(prop_mod$d*prop_mod$B/sum(prop_mod$B))
+
+  emptyprop$a = sum(prop_mod$a*prop_mod$B/sum(prop_mod$B))
+
+  emptyprop$p = sum(prop_mod$p*prop_mod$B/sum(prop_mod$B))
+
+  emptyprop$CN = sum(prop_mod$CN*prop_mod$B/sum(prop_mod$B))
 
   emptyprop[,"canIMM"] = max(prop_mod$canIMM)
   if(length(unique(prop_mod$canIMM))>1) warning("Combined trophic species have different parameters for canIMM. Choosing canIMM == 1")
