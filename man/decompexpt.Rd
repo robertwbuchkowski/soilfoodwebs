@@ -4,10 +4,12 @@
 \alias{decompexpt}
 \title{Decomposition rates and effect of individual organisms}
 \usage{
-decompexpt(usin, overtime = NA)
+decompexpt(usin, selected = NULL, overtime = NA)
 }
 \arguments{
 \item{usin}{The community in which we want to calculate decomposition rates.}
+
+\item{selected}{A vector of the species names for which you want to calculate direct and indirect effects on decomposition. Default NULL means all species in the food web. Useful for cases where removing certain species breaks the food web structure.}
 
 \item{overtime}{Do you want to return a decomposition trajectory overtime with and without all species? If so, set this to the number of time steps you want to see.}
 }

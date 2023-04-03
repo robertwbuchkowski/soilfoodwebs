@@ -1,6 +1,7 @@
 #' Decomposition rates and effect of individual organisms
 #'
 #' @param usin The community in which we want to calculate decomposition rates.
+#' @param selected A vector of the species names for which you want to calculate direct and indirect effects on decomposition. Default NULL means all species in the food web. Useful for cases where removing certain species breaks the food web structure.
 #' @param overtime Do you want to return a decomposition trajectory overtime with and without all species? If so, set this to the number of time steps you want to see.
 #' @return A list. The first item is the basic decomposition constants. The second is a table of decomposition constants for each detritus pool. The third only runs if asked for by `overtime` and is the predicted trajectory.
 #' @details
@@ -13,11 +14,17 @@
 #' # Basic example for the introductory community:
 #' decompexpt(intro_comm)
 #' @export
-decompexpt <- function(usin, overtime = NA){
+decompexpt <- function(usin, selected = NULL, overtime = NA){
   usin = checkcomm(usin)
   Nnodes = dim(usin$imat)[1]
   IDdetritus = which(usin$prop$isDetritus > 0)
   Nnames = usin$prop$ID[which(usin$prop$isDetritus == 0)] # List of species that aren't detritus
+
+  # Select only the chosen nodes:
+  if(!is.null(selected)){
+    if(!all(selected %in% Nnames)) stop("All selected nodes must be present in the community.")
+    Nnames = selected
+  }
 
   res1 <- comana(usin)
 
