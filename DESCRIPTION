@@ -4,7 +4,7 @@ Title: Soil Food Web Analysis
 Version: 0.1.0
 Author: Robert W. Buchkowski
 Maintainer: Robert W. Buchkowski <robert.buchkowski@gmail.com>
-Description: A package for analyzing soil food webs or any food web 
+Description: Analyzing soil food webs or any food web 
     measured at equilibrium. The package analyzes them at equilibirum 
     by calculating fluxes and stability properties. The package can also
     manipulate the structure of the food web by adding, removing, and

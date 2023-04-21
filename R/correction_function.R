@@ -10,6 +10,7 @@
 #' @param diet_correct Boolean: Does the organism correct it's diet?
 #' @param Conly Boolean: Is the model meant for carbon only?
 #' @param Immobilizationlimit This is the limit of the amount of nitrogen the food web can immobilize nitrogen (NOT PLANTS). This will impact the calculations of inorganic nitrogen dynamics.
+#'
 #' @return Returns the consumption rates (FMAT) and production efficiencies (p).
 #' @details
 #' This function takes inputs from the ODE and outputs corrected consumption rates.

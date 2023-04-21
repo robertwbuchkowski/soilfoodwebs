@@ -297,6 +297,14 @@ removenodes <- function(COMM, toremove){
 #' @param newprops A vector of the new properties with the appropriate names.
 #' @return The community with the new node.
 #' @seealso \code{\link{removenodes}}
+#' @examples
+#' # Add a node to the introductory community:
+#' newnode(intro_comm, "NewNode",
+#' prey = c(Detritus1 = 1),
+#' predator = c(Predator = 2, Orib1 = 0.1),
+#' newprops = c(d = 1, a = 0.1, p = 0.1,
+#' B = 10, CN = 10, DetritusRecycling = 0,
+#' isDetritus = 0, isPlant = 0, canIMM = 0))
 #' @export
 newnode <- function(COMM, newname, prey = NA, predator = NA, newprops){
 
