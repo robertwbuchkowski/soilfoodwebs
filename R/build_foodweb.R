@@ -12,9 +12,9 @@ build_foodweb <- function(feeding,
   if(!all(colnames(feeding) %in% c("Predator", "Prey", "Preference"))) stop("feeding needs to have the columns: Predator, Prey, and Preference")
 
   # Check that all of the feeding columns are the right type:
-  if(class(feeding$Preference) != "numeric") stop("feeding Preference needs to be numeric")
-  if(class(feeding$Predator) != "character") stop("feeding Preference needs to be a character")
-  if(class(feeding$Prey) != "character") stop("feeding Preference needs to be a character")
+  if(!inherits(feeding$Preference, "numeric")) stop("feeding Preference needs to be numeric")
+  if(!inherits(feeding$Predator, "character")) stop("feeding Preference needs to be a character")
+  if(!inherits(feeding$Prey, "character")) stop("feeding Preference needs to be a character")
 
   # Check that there are na missing values:
   if(any(is.na(feeding$Preference))) stop("No feeding preference values can be NA")

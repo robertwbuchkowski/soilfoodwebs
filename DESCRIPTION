@@ -21,9 +21,7 @@ Imports:
   quadprog (>= 1.5-8),
   lpSolve (>= 5.6.15),
   rootSolve (>= 1.8.2.2),
-  deSolve (>= 1.28),
-  rlang (>= 0.4.11),
-  utils (>= 4.1.0)
+  deSolve (>= 1.28)
 Depends: 
     R (>= 2.10)
 Suggests: 
