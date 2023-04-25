@@ -17,3 +17,27 @@ A community that is compatible with the functions of soilfoodwebs. This is a lis
 \description{
 A function to compile the food web from simple data inputs
 }
+\examples{
+# Creating a simple three node community:
+
+# Create a data frame of feeding relationships:
+feedinglist = data.frame(
+Predator = c("Pred", "Pred"),
+Prey = c("Prey1", "Prey2"),
+Preference = c(1,1.2))
+
+# Create a data frame of properties for each species:
+properties = data.frame(ID = c("Pred", "Prey1", "Prey2"), # Name
+d = c(1,3,0.5), # Death rate
+a = c(0.61,0.65,0.45), # Assimilation efficiency
+p = c(0.5,0.4,0.3), # Production efficiency for carbon
+B = c(0.1,8,5), # Biomass
+CN = c(4.5,4.8,5), # Carbon to nitrogen ratio
+DetritusRecycling = c(0,0,0), # proportion of detritus recycling
+isDetritus = c(0,0,0), # Boolean: Is this pool detritus?
+isPlant = c(0,0,0), # Boolean: Is this pool a plant?
+canIMM = c(0,0,0)) # Boolean: Can the pool immobilize inorganic nitrogen?
+
+# Build the food web:
+build_foodweb(feedinglist, properties)
+}

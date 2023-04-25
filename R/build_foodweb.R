@@ -3,6 +3,29 @@
 #' @param  feeding A data frame listing the feeding relationships in the food web. Only needs to contain the nodes that have prey items along with their names. Three columns in this data frame must be: Predator, Prey, and Preference. The Predator column is the name of the predator, the Prey column is the name of the prey, and the Preference is the preference that the predator has for that prey item after correcting for abundance. Preference values are relative, so for each predator the preference value can be any number and all that matters is its proportion of the total of all preference values given to that predator. Preference is meaningless if a predator only has one prey item. A good default value is 1 for everything if you don't want to set preferences beyond prey abundance.
 #' @param properties A data frame listing the properties or parameters in the food web. Must contain the names of all of the nodes in the food web. This data frame must contain: ID, d,a,p,B, CN, Detritusrecycling, isDetritus, isPlant, and canIMM.
 #' @return A community that is compatible with the functions of soilfoodwebs. This is a list with the feeding matrix imat first and the properties prop second.
+#' @examples
+#'# Creating a simple three node community:
+#'
+#'# Create a data frame of feeding relationships:
+#'feedinglist = data.frame(
+#'Predator = c("Pred", "Pred"),
+#'Prey = c("Prey1", "Prey2"),
+#'Preference = c(1,1.2))
+#'
+#'# Create a data frame of properties for each species:
+#'properties = data.frame(ID = c("Pred", "Prey1", "Prey2"), # Name
+#'d = c(1,3,0.5), # Death rate
+#'a = c(0.61,0.65,0.45), # Assimilation efficiency
+#'p = c(0.5,0.4,0.3), # Production efficiency for carbon
+#'B = c(0.1,8,5), # Biomass
+#'CN = c(4.5,4.8,5), # Carbon to nitrogen ratio
+#'DetritusRecycling = c(0,0,0), # proportion of detritus recycling
+#'isDetritus = c(0,0,0), # Boolean: Is this pool detritus?
+#'isPlant = c(0,0,0), # Boolean: Is this pool a plant?
+#'canIMM = c(0,0,0)) # Boolean: Can the pool immobilize inorganic nitrogen?
+#'
+#'# Build the food web:
+#'build_foodweb(feedinglist, properties)
 #' @export
 
 build_foodweb <- function(feeding,

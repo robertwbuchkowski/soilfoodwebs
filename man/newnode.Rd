@@ -28,7 +28,9 @@ Add node to the community
 newnode(intro_comm, "NewNode",
 prey = c(Detritus1 = 1),
 predator = c(Predator = 2, Orib1 = 0.1),
-newprops = c(d = 1, a = 0.1, p = 0.1, B = 10, CN = 10, DetritusRecycling = 0, isDetritus = 0, isPlant = 0, canIMM = 0))
+newprops = c(d = 1, a = 0.1, p = 0.1,
+B = 10, CN = 10, DetritusRecycling = 0,
+isDetritus = 0, isPlant = 0, canIMM = 0))
 }
 \seealso{
 \code{\link{removenodes}}
