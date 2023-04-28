@@ -40,7 +40,7 @@
 #' @source \url{https://doi.org/10.1016/j.soilbio.2016.02.014}
 "Andres2016"
 
-#' The soil food web published for CPER
+#' The soil food web published for an Arctic Tundra site
 #'
 #' The community contains 41 nodes in bacterial, fungal, and root energy channels. One node has zero biomass and is removed by the check_comm() function.
 #'

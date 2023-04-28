@@ -3,7 +3,7 @@
 \docType{data}
 \name{Koltz2018}
 \alias{Koltz2018}
-\title{The soil food web published for CPER}
+\title{The soil food web published for an Arctic Tundra site}
 \format{
 A community with a feeding matrix and properties dataframe:
 \describe{
