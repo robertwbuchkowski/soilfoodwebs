@@ -15,6 +15,9 @@ A vector of trophic level assignments. The base of the food chain is 0.
 \description{
 Calculates the trophic level for each tropospecies
 }
+\details{
+This function is a subset of code provided in the package Cheddar written by Lawrence Hudson, Dan Reuman and Rob Emerson. It is licensed under a BSD_2_clause, the text of which is provided as a comment in the function code. The original package can be found on CRAN or https://github.com/quicklizard99/cheddar/
+}
 \examples{
 TLcheddar(intro_comm$imat)
 }
