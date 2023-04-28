@@ -2,8 +2,14 @@ Package: soilfoodwebs
 Type: Package
 Title: Soil Food Web Analysis
 Version: 0.1.0
-Authors@R: person("Robert", "Buchkowski", email = "robert.buchkowski@gmail.com",
-  role = c("aut", "cre", "cph"))
+Authors@R: c(
+person("Robert", "Buchkowski", email = "robert.buchkowski@gmail.com",
+  role = c("aut", "cre", "cph")),
+person("Zoë", "Lindo", email = "zlindo@uwo.ca",
+  role = c("aut")),
+person("Carlos", "Barreto", email = "Carlos.Barreto@ontario.ca",
+  role = c("aut"))
+)
 Maintainer: Robert W. Buchkowski <robert.buchkowski@gmail.com>
 Description: Analyzing soil food webs or any food web 
     measured at equilibrium. The package analyzes them at equilibirum 
