@@ -3,7 +3,7 @@
 #' @param W A matrix of trophic species. Rows eat columns.
 #' @return A vector of trophic level assignments. The base of the food chain is 0.
 #' @details
-#' This function is a subset of code provided in the package Cheddar written by Lawrence Hudson, Dan Reuman and Rob Emerson. It is licensed under a BSD_2_clause, the text of which is provided as a comment in the function code. The original package can be found on CRAN or https://github.com/quicklizard99/cheddar/
+#' This function is a subset of code provided in the package Cheddar written by Lawrence Hudson, Dan Reuman and Rob Emerson. It is licensed under a BSD_2_clause, the text of which is provided as a comment in the function code. The original package can be found on CRAN or at https://github.com/quicklizard99/cheddar/
 #' @export
 #' @examples
 #' TLcheddar(intro_comm$imat)
