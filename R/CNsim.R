@@ -162,10 +162,10 @@ CNsim <- function(usin,
 
   # Return only state variables if asked:
   if(rtn_only_state){
-    output = output[(1:length(c("Day",
-                              paste0(SVnames, "_Carbon"),
-                              paste0(SVnames2, "_Nitrogen"),
-                              DETINFO))),]
+    output = output[,(1:length(c("Day",
+                                 paste0(SVnames, "_Carbon"),
+                                 paste0(SVnames2, "_Nitrogen"),
+                                 DETINFO)))]
   }
 
   return(output)
