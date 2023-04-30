@@ -95,7 +95,7 @@ foodwebode <- function(t,y,pars){
   delta[isDetritus>0] = delta[isDetritus>0] + DetritusRecycling[isDetritus>0]*sum(c((1-a)*rowSums(FMAT), (densitydependence*d*B^2 + (1-densitydependence)*d*B))) # add back in dead biomass and rejected food to detritus
 
   # Nitrogen equations (C:N constant for all except detritus)
-  deltaN = a*FMAT%*%(1/CN) - colSums(FMAT)/CN - densitydependence*d*(B^2)/CN - (1-densitydependence)*d*B/CN + (IN + r_i*B)/IN_CN + plant_growthN
+  deltaN = a*FMAT%*%(1/CN) - colSums(FMAT)/CN - densitydependence*d*(B^2)/CN - (1-densitydependence)*d*B/CN + (IN + r_i*B)/CN + plant_growthN
   deltaN[isDetritus>0] = deltaN[isDetritus>0] + DetritusRecycling[isDetritus>0]*sum(c((1-a)*FMAT%*%(1/CN), (densitydependence*d*(B^2)/CN + (1-densitydependence)*d*B/CN))) # add back in dead biomass and rejected food to detritus
 
   # calculate the decomposition constant (k), which is the sum of all consumed detritus divided by the detritus pool size
