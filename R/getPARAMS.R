@@ -158,7 +158,7 @@ getPARAMS <- function(usin,
   # Add back in the system inputs
   delta = delta + IN + r_i*B + plant_N_growth*CN
 
-  if(max(abs(delta)) > 1e-10) warning("Error in initial equilibrium. Check the code")
+  if(max(abs(delta)) > 1e-5) warning("Initial equilibrium has error rate larger than 1e-5. Run a test simulation with no modifications to ensure that the equilibrium is stable.")
 
   #Replace any user defined input values
 

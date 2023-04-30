@@ -13,6 +13,7 @@
 #' @param inorganic_nitrogen_properties A list of state variables for the inorganic nitrogen pool (INN = inputs, q = per capita loss of N, eqmN = equilibrium N). Must include a value for two of the three variables and has the final one as NA.
 #' @param DETEXPT The pool that should be used for the detritus experiment by name or position in the vector usin$prop$ID.
 #' @param DETEXPTSTART The start of the detritus experiment. Defaults to 100.
+#' @param rtn_only_state Boolean: Do you want to only return the model state variables? If FALSE then the consumption rates and production efficiency at each time step are also returned.
 #' @return The output of the simulation.
 #' @details
 #' A function that simulates the food web over the user defined times. If you do not modify the starting state using start_mod or add a detritus experiment using DETEXPT, then the result will just be a flat line if the food web is stable.
@@ -38,7 +39,8 @@ CNsim <- function(usin,
                   densitydependence = NA,
                   inorganic_nitrogen_properties = list(INN = NA, q = NA, eqmN = NA),
                   DETEXPT = NA,
-                  DETEXPTSTART = NA){
+                  DETEXPTSTART = NA,
+                  rtn_only_state = T){
   # Correct stoichiometry if necessary:
   if(Conly){
     usin = usin
@@ -157,6 +159,14 @@ CNsim <- function(usin,
 
   # Get rid of all output columns that are just all zero (usually consumption rates between pools that don't eat each other.)
   output = output[,!colSums(abs(output)) == 0]
+
+  # Return only state variables if asked:
+  if(rtn_only_state){
+    output = output[(1:length(c("Day",
+                              paste0(SVnames, "_Carbon"),
+                              paste0(SVnames2, "_Nitrogen"),
+                              DETINFO))),]
+  }
 
   return(output)
 }

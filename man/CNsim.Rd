@@ -17,7 +17,8 @@ CNsim(
   densitydependence = NA,
   inorganic_nitrogen_properties = list(INN = NA, q = NA, eqmN = NA),
   DETEXPT = NA,
-  DETEXPTSTART = NA
+  DETEXPTSTART = NA,
+  rtn_only_state = T
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ CNsim(
 \item{DETEXPT}{The pool that should be used for the detritus experiment by name or position in the vector usin$prop$ID.}
 
 \item{DETEXPTSTART}{The start of the detritus experiment. Defaults to 100.}
+
+\item{rtn_only_state}{Boolean: Do you want to only return the model state variables? If FALSE then the consumption rates and production efficiency at each time step are also returned.}
 }
 \value{
 The output of the simulation.
