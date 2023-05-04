@@ -16,7 +16,7 @@ A list of four communities each with a feeding matrix and properties dataframe. 
 }
 }
 \source{
-\url{https://doi.org/10.1016/j.soilbio.2010.10.004}
+\doi{10.1016/j.soilbio.2010.10.004}
 }
 \usage{
 Holtkamp2011

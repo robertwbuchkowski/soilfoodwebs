@@ -16,7 +16,7 @@ A list of four communities each with a feeding matrix and properties dataframe. 
 }
 }
 \source{
-\url{https://doi.org/10.1016/0167-8809(94)90044-2}
+\doi{10.1016/0167-8809(94)90044-2}
 }
 \usage{
 deRuiter1994

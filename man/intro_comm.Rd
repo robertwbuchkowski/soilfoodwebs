@@ -12,7 +12,7 @@ A community with a feeding matrix and properties dataframe:
 }
 }
 \source{
-\url{https://besjournals.onlinelibrary.wiley.com/doi/10.1111/1365-2435.13706}
+Example not based on real empirical data.
 }
 \usage{
 intro_comm

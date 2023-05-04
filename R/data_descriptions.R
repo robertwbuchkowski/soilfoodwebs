@@ -6,7 +6,7 @@
 #'   \item{imat}{The feeding matrix. Rows eat columns.}
 #'   \item{prop}{The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators.}
 #' }
-#' @source \url{https://besjournals.onlinelibrary.wiley.com/doi/10.1111/1365-2435.13706}
+#' @source Example not based on real empirical data.
 "intro_comm"
 
 #' The soil food web published for CPER
@@ -18,7 +18,7 @@
 #'   \item{imat}{The feeding matrix. Rows eat columns.}
 #'   \item{prop}{The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in kilograms of carbon per hectare and turnover/death rate is in years.}
 #' }
-#' @source \url{https://doi.org/10.1007/BF00260580}
+#' @source \doi{10.1007/BF00260580}
 "Hunt1987"
 
 #' The soil food webs published for grazed and ungrazed plots in the Shortgrass Steppe long-term research station.
@@ -37,7 +37,7 @@
 #'   \item{prop}{Within the community: The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in kilograms of carbon per hectare and turnover/death rate is in years.}
 #' }
 #'
-#' @source \url{https://doi.org/10.1016/j.soilbio.2016.02.014}
+#' @source \doi{10.1016/j.soilbio.2016.02.014}
 "Andres2016"
 
 #' The soil food web published for an Arctic Tundra site
@@ -49,7 +49,7 @@
 #'   \item{imat}{The feeding matrix. Rows eat columns.}
 #'   \item{prop}{The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in milligrams of carbon per square meter and turnover/death rate is in years.}
 #' }
-#' @source \url{http://link.springer.com/10.1007/s00300-017-2201-5}
+#' @source \doi{10.1007/s00300-017-2201-5}
 "Koltz2018"
 
 #' The soil food webs published along a chronosequence in the Netherlands.
@@ -66,7 +66,7 @@
 #'   \item{prop}{Within the community: The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in kilograms of carbon per hectare to 10-cm depth and turnover/death rate is in years.}
 #' }
 #'
-#' @source \url{https://doi.org/10.1016/j.soilbio.2010.10.004}
+#' @source \doi{10.1016/j.soilbio.2010.10.004}
 "Holtkamp2011"
 
 
@@ -84,5 +84,5 @@
 #'   \item{prop}{Within the community: The properties data frame containing node names (ID), assimilation efficiency (a), production efficiency(p), C:N ratio (CN), biomass (B), death rate (d), proportion of death cycled back to a detrital pool (DetritusRecycling), Booleans stating whether the node is detritus, plant, and can immobilize nitrogen, and a list of mutual predators. Biomass is in kilograms of carbon per hectare in the depth range noted above and turnover/death rate is in years.}
 #' }
 #'
-#' @source \url{https://doi.org/10.1016/0167-8809(94)90044-2}
+#' @source \doi{10.1016/0167-8809(94)90044-2}
 "deRuiter1994"

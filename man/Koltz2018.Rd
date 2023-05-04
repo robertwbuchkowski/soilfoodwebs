@@ -12,7 +12,7 @@ A community with a feeding matrix and properties dataframe:
 }
 }
 \source{
-\url{http://link.springer.com/10.1007/s00300-017-2201-5}
+\doi{10.1007/s00300-017-2201-5}
 }
 \usage{
 Koltz2018
