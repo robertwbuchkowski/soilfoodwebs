@@ -65,9 +65,9 @@ foodwebode <- function(t,y,pars){
   }
 
   # Calculate new C:N ratios:
-  CN = round(B/Nbiomass, 5) # This rounding occurs because of numeric instability in the calculation of C:N ratio. Small changes can lead to large differences and cause errors in our assessment of change. C:N ratio differences after 5 decimal places probably don't matter
+  CN = B/Nbiomass
 
-  # Calculate the inorganic nitrogen that will be available for immobilization based on the current amount less losses and plant uptake, currently plants have precident for N uptake!!
+  # Calculate the inorganic nitrogen that will be available for immobilization based on the current amount less losses and plant uptake, currently plants have precedent for N uptake!!
   if(hasIORGN){
     N_avail = INN + IORGN - q*IORGN - sum(cpn[isPlant == 1]*B[isPlant == 1]*IORGN)
   }else{
@@ -117,21 +117,6 @@ foodwebode <- function(t,y,pars){
 
   # Take the mineralized N out of the pools
   deltaN = deltaN - Nmin
-
-  # Confirm that fixed C:N ratio is staying fixed
-
-  changenotdet = abs(delta) > 1e-04 & isDetritus == 0 # Identify the non-detritus pools that are actually changing in pool size.
-
-  if(sum(changenotdet) >0 &
-     !isTRUE(all.equal(unname(c(delta/deltaN)[changenotdet]), unname(IN_CN)[changenotdet], tolerance = 1e-4)) # Check if the ratio of change for non-Detritus pools that are changing size is still the C:N ratio.
-  ){
-    warning("Constant C:N ratios appear to be changing. Check model formulation to make sure this isn't an issue by simulating the model with and without keepallnitrogen = TRUE.")
-    toprint = abs(c(delta/deltaN)[changenotdet] - IN_CN[changenotdet]) > 1e-4
-    arrind = which(toprint, arr.ind = T)
-    for(i in 1:sum(toprint)){
-      print(paste0("At time step ",t, " the actual C:N ratio of change was  ", c(delta/deltaN)[changenotdet][arrind[i]], " but should have been ",IN_CN[changenotdet][arrind[i]]))
-    }
-  }
 
   # Add N to inorganic pool if necessary:
   if(hasIORGN) dIORGN = INN -q*IORGN - sum(cpn[isPlant == 1]*B[isPlant == 1]*IORGN) + sum(Nmin)

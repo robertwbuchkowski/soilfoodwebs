@@ -157,9 +157,6 @@ CNsim <- function(usin,
                        paste0(SVnames,"_prodeff"),
                        paste0(rep(SVnames, times = Nnodes), "-eats-",rep(SVnames, each = Nnodes), "_consrate"))
 
-  # Get rid of all output columns that are just all zero (usually consumption rates between pools that don't eat each other.)
-  output = output[,!colSums(abs(output)) == 0]
-
   # Return only state variables if asked:
   if(rtn_only_state){
     output = output[,(1:length(c("Day",
