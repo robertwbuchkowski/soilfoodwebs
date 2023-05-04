@@ -1,7 +1,7 @@
 Package: soilfoodwebs
 Type: Package
 Title: Soil Food Web Analysis
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(person("Robert","Buchkowski", email = "robert.buchkowski@gmail.com",role = c("aut", "cre", "cph")),person("Zoë", "Lindo",role = c("aut")),person("Carlos", "Barreto",role = c("aut")))
 Maintainer: Robert Buchkowski <robert.buchkowski@gmail.com>
 Description: Analyzing soil food webs or any food web 
