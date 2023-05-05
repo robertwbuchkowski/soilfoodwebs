@@ -11,7 +11,7 @@
 #' stability(intro_comm)
 #' @seealso \code{\link{calc_smin}} for the full use of the Moorecobian and \code{\link{stability2}} for the estimation of stability using the functions from \code{\link[rootSolve]{jacobian.full}}
 #' @export
-stability <- function(usin, correctstoich = T, forceProd = F, smin = 1, method = "Jacobian"){ # Function only requires the community inputs
+stability <- function(usin, correctstoich = TRUE, forceProd = FALSE, smin = 1, method = "Jacobian"){ # Function only requires the community inputs
 
   # Confirm that the type of stability test is correct
   if(!method %in% c("Jacobian", "Moorecobian")) stop("method must be either Jacobian or Moorecobian")
@@ -35,8 +35,8 @@ stability <- function(usin, correctstoich = T, forceProd = F, smin = 1, method =
   Nnodes = dim(imat)[1] # Number of nodes
 
   Bpred = matrix(prop$B, ncol = Nnodes, nrow = Nnodes) # A matrix of predators
-  Bprey = matrix(prop$B, ncol = Nnodes, nrow = Nnodes, byrow = T) # A matirx of prey
-  fmat = comana(usin, shuffleTL = F)$fmat # Get the consumption matrix (units = gC/ time)
+  Bprey = matrix(prop$B, ncol = Nnodes, nrow = Nnodes, byrow = TRUE) # A matirx of prey
+  fmat = comana(usin, shuffleTL = FALSE)$fmat # Get the consumption matrix (units = gC/ time)
   cij = fmat/(Bpred*Bprey) # Get the consumption rate matrix (units 1/ (gC * time))
 
   # List which pools are detritus
@@ -106,9 +106,9 @@ stability <- function(usin, correctstoich = T, forceProd = F, smin = 1, method =
         prop$DetritusRecycling[DPOS]*(
           prop$d[all_other_pools] + # Death rates
 
-            rowSums(cij[all_other_pools,]*matrix(prop$B, nrow = length(all_other_pools), ncol = Nnodes, byrow=T)*matrix((1-prop$a[all_other_pools]), nrow = length(all_other_pools), ncol = Nnodes, byrow=F)) + # Add poop from when focal pool is predator
+            rowSums(cij[all_other_pools,]*matrix(prop$B, nrow = length(all_other_pools), ncol = Nnodes, byrow=T)*matrix((1-prop$a[all_other_pools]), nrow = length(all_other_pools), ncol = Nnodes, byrow=FALSE)) + # Add poop from when focal pool is predator
 
-            colSums(cij[,all_other_pools]*matrix(prop$B, nrow = Nnodes, ncol = length(all_other_pools), byrow=F)*matrix((1-prop$a), nrow = Nnodes, ncol = length(all_other_pools), byrow=F))# add poop from where it is prey
+            colSums(cij[,all_other_pools]*matrix(prop$B, nrow = Nnodes, ncol = length(all_other_pools), byrow=FALSE)*matrix((1-prop$a), nrow = Nnodes, ncol = length(all_other_pools), byrow=FALSE))# add poop from where it is prey
         )
 
     }

@@ -18,7 +18,7 @@ Jacobsindex = function(usin){
   Nnodes = dim(imat)[1] # Calculate the number of nodes
 
   # Calculate the components of Jacob's Index r and p.
-  r = (imat *matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow = T)/rowSums(imat * matrix(prop$B, nrow = Nnodes,ncol = Nnodes, byrow = T)))
+  r = (imat *matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow = TRUE)/rowSums(imat * matrix(prop$B, nrow = Nnodes,ncol = Nnodes, byrow = TRUE)))
 
   imat2 = imat
   imat2[imat2 > 0] = 1

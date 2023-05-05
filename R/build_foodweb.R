@@ -54,7 +54,7 @@ build_foodweb <- function(feeding,
 
   feedingmatrix = matrix(0,
                          dimnames = list(properties$ID, properties$ID),
-                         ncol = length(properties$ID), nrow = length(properties$ID), byrow = T)
+                         ncol = length(properties$ID), nrow = length(properties$ID), byrow = TRUE)
 
   #Run through the feeding list and add in the non-zero feeding links identified there.
   for(i in 1:dim(feeding)[1]){

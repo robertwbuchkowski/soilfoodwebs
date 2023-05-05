@@ -7,10 +7,10 @@
 calculate_inputs(
   usin,
   DIETLIMTS = NA,
-  diet_correct = T,
-  Conly = F,
-  verbose = T,
-  toround = T
+  diet_correct = TRUE,
+  Conly = FALSE,
+  verbose = TRUE,
+  toround = TRUE
 )
 }
 \arguments{

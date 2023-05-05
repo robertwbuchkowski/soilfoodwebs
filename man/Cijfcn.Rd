@@ -4,7 +4,7 @@
 \alias{Cijfcn}
 \title{A utility function to calculate the consumption rate of each species on all prey assuming a type I functional response.}
 \usage{
-Cijfcn(usin, shuffleTL = F, rmzeros = T)
+Cijfcn(usin, shuffleTL = FALSE, rmzeros = TRUE)
 }
 \arguments{
 \item{usin}{The community on which feeding rate calculations are made.}

@@ -4,7 +4,7 @@
 \alias{calculate_smin}
 \title{Function used inside the calc_smin function}
 \usage{
-calculate_smin(SMIN = 1, usin, isSQR = T)
+calculate_smin(SMIN = 1, usin, isSQR = TRUE)
 }
 \arguments{
 \item{SMIN}{The value of smin.}

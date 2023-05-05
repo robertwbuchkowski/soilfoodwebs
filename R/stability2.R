@@ -24,12 +24,12 @@
 #' @export
 stability2 <- function(usin,
                        DIETLIMTS = NA,
-                       diet_correct = T,
-                       Conly = F,
+                       diet_correct = TRUE,
+                       Conly = FALSE,
                        userdefinedinputs = NA,
-                       has_inorganic_nitrogen = F,
+                       has_inorganic_nitrogen = FALSE,
                        inorganic_nitrogen_properties = list(INN = NA, q = NA, eqmN = NA),
-                       forstabilityonly = T,
+                       forstabilityonly = TRUE,
                        densitydependence = NA){
 
   # Correct the stoichiometry using the built in function only if the model is not carbon only

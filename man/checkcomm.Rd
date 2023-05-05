@@ -4,7 +4,7 @@
 \alias{checkcomm}
 \title{A function check the community for errors before it is used in calculations.}
 \usage{
-checkcomm(usin, shuffleTL = F, rmzeros = T, verbose = T)
+checkcomm(usin, shuffleTL = FALSE, rmzeros = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{usin}{The community to check.}

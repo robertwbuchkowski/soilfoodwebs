@@ -6,8 +6,8 @@
 \usage{
 stability(
   usin,
-  correctstoich = T,
-  forceProd = F,
+  correctstoich = TRUE,
+  forceProd = FALSE,
   smin = 1,
   method = "Jacobian"
 )

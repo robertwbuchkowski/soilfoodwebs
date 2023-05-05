@@ -13,11 +13,11 @@ parameter_uncertainty(
   errortype = "CV",
   fcntorun = "comana",
   replicates = 100,
-  returnprops = F,
-  returnresults = T,
-  rejectnegconsump = T,
-  correctstoich = T,
-  verbose = T
+  returnprops = FALSE,
+  returnresults = TRUE,
+  rejectnegconsump = TRUE,
+  correctstoich = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{

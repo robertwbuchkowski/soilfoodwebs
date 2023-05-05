@@ -29,18 +29,18 @@
 #' @export
 CNsim <- function(usin,
                   DIETLIMTS = NA,
-                  diet_correct = T,
-                  Conly = F,
+                  diet_correct = TRUE,
+                  Conly = FALSE,
                   userdefinedinputs = NA,
                   start_mod = NA,
                   TIMES = 1:100,
-                  keepallnitrogen = T,
-                  has_inorganic_nitrogen = F,
+                  keepallnitrogen = TRUE,
+                  has_inorganic_nitrogen = FALSE,
                   densitydependence = NA,
                   inorganic_nitrogen_properties = list(INN = NA, q = NA, eqmN = NA),
                   DETEXPT = NA,
                   DETEXPTSTART = NA,
-                  rtn_only_state = T){
+                  rtn_only_state = TRUE){
   # Correct stoichiometry if necessary:
   if(Conly){
     usin = usin

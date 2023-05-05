@@ -19,7 +19,7 @@
 #' whomineralizes(intro_comm)
 #' @export
 whomineralizes <- function(usin, selected = NULL){
-  usin = checkcomm(usin, verbose = F) # Check the community for errors
+  usin = checkcomm(usin, verbose = FALSE) # Check the community for errors
   Nnodes = dim(usin$imat)[1] # Get the number of nodes
   Nnames = usin$prop$ID # Get the names
 

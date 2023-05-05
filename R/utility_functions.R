@@ -120,7 +120,7 @@ TLsort <- function(usin){
     # Build a list of predators
     predatorlist = imat[,rid] > 0
     # Turn any predators that are on the mutual feeding list to false...these can't be sorted hierarchically
-    predatorlist[names(predatorlist) %in%  stringr::str_split(prop$MutualPred[rid], "/")[[1]]] = F
+    predatorlist[names(predatorlist) %in%  stringr::str_split(prop$MutualPred[rid], "/")[[1]]] = FALSE
     if(sum(predatorlist) == 0){
       rid = rid + 1
     }else{
@@ -191,14 +191,14 @@ can_mutfeed <- function(usin){
 #' Aijfcn(intro_comm)
 #' @export
 Aijfcn <- function(usin){
-  tt = comana(usin, shuffleTL = F)
+  tt = comana(usin, shuffleTL = FALSE)
   FMAT = tt$fmat
   Nnodes = dim(FMAT)[1]
   FMAT2 = FMAT
   FMAT2[FMAT2>0] = 1
 
   # Below matricies are multipled to calculate the net excess or deficit of nitrogen in the organisms diet using their C:N raito and the C:N ratio of the food that they consume.
-  Aij = (matrix(1/usin$prop$CN, nrow = Nnodes, ncol = Nnodes, byrow = T) - matrix(usin$prop$p/usin$prop$CN, nrow=Nnodes, ncol = Nnodes))*matrix(usin$prop$a, nrow=Nnodes, ncol = Nnodes)*FMAT2
+  Aij = (matrix(1/usin$prop$CN, nrow = Nnodes, ncol = Nnodes, byrow = TRUE) - matrix(usin$prop$p/usin$prop$CN, nrow=Nnodes, ncol = Nnodes))*matrix(usin$prop$a, nrow=Nnodes, ncol = Nnodes)*FMAT2
 
   return(Aij)
 }
@@ -212,7 +212,7 @@ Aijfcn <- function(usin){
 #' @examples
 #' Cijfcn(intro_comm)
 #' @export
-Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires the community inputs
+Cijfcn <- function(usin, shuffleTL = FALSE, rmzeros = TRUE){ # Function only requires the community inputs
 
   # Check the community
   usin = checkcomm(usin, shuffleTL = shuffleTL, rmzeros = rmzeros)
@@ -224,7 +224,7 @@ Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires t
 
   Bpred = matrix(prop$B, ncol = Nnodes, nrow = Nnodes) # A matrix of predators
   Bprey = matrix(prop$B, ncol = Nnodes, nrow = Nnodes, byrow = T) # A matrix of prey
-  fmat = comana(usin, shuffleTL = F)$fmat # Get the consumption matrix (units = gC/ time)
+  fmat = comana(usin, shuffleTL = FALSE)$fmat # Get the consumption matrix (units = gC/ time)
   cij = fmat/(Bpred*Bprey) # Get the consumption rate matrix (units 1/ (gC * time))
   return(cij) # Return the consumption rates (gC^-1 time^-1)
 }
@@ -239,7 +239,7 @@ Cijfcn <- function(usin, shuffleTL = F, rmzeros = T){ # Function only requires t
 #' @examples
 #' checkcomm(intro_comm)
 #' @export
-checkcomm <- function(usin, shuffleTL = F, rmzeros = T, verbose = T){
+checkcomm <- function(usin, shuffleTL = FALSE, rmzeros = TRUE, verbose = TRUE){
 
   # Check that all properties are included:
   if(!all(c("ID", "d", "a", "p", "B", "CN", "isDetritus", "isPlant", "canIMM","DetritusRecycling") %in% colnames(usin$prop))) stop("The community needs all the following properties in the database: ID, d, a, p, B, CN, isDetritus, isPlant, canIMM, and DetritusRecycling. MutualPred column will be created if it is not included.")

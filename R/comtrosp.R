@@ -2,8 +2,8 @@
 #'
 #' @param usin The community were you are combining trophic species
 #' @param selected Select trophic species to combine, which ones do you want to combine (vector of names)? If left as NA, the two most similar trophic species are combined. Similarity is determined by shared feeding relationships.
-#' @param  deleteCOMBOcannibal Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (T) or leave it in the model (F)?
-#' @param allFEEDING1 Boolean: Do you want to return all feeding preferences to 1 (T), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (F)?
+#' @param  deleteCOMBOcannibal Boolean: Do you want to delete the cannibalism that may have been created by combining two trophic species (TRUE) or leave it in the model (FALSE)?
+#' @param allFEEDING1 Boolean: Do you want to return all feeding preferences to 1 (TRUE), or would you like to set the feeding preferences of the newly combined trophic species as the biomass-weighted average of the old ones (FALSE)?
 #' @param newname The name you want to use for the combined trophic species. Default replaces combines the names of the original trophic species divided by "/".
 #' @return The new community with the seltf or most similar trophic species combined.
 #' @details
@@ -26,8 +26,8 @@
 
 comtrosp <- function(usin,
                      selected = NA,
-                     deleteCOMBOcannibal = F,
-                     allFEEDING1 = F,
+                     deleteCOMBOcannibal = FALSE,
+                     allFEEDING1 = FALSE,
                      newname = NA
 ){
   imat = usin$imat
@@ -143,8 +143,8 @@ comtrosp <- function(usin,
   # Calculate diet proportions in the original model:
 
   dietprop = (imat * matrix(prop$B, nrow = Nnodes, ncol = Nnodes,
-                            byrow = T)/rowSums(imat * matrix(prop$B, nrow = Nnodes,
-                                                             ncol = Nnodes, byrow = T)))
+                            byrow = TRUE)/rowSums(imat * matrix(prop$B, nrow = Nnodes,
+                                                             ncol = Nnodes, byrow = TRUE)))
 
   # Set NA as zero
   dietprop[is.na(dietprop)] = 0
@@ -178,11 +178,11 @@ comtrosp <- function(usin,
   }
 
   # Convert diet proportions back into feeding preferences with new properties matrix
-  imat_update = dietprop2/matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = T)
+  imat_update = dietprop2/matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = TRUE)
 
 
   # Confirm that the diet proportions turned out right
-  checkdietprop = (imat_update * matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = T)/rowSums(imat_update * matrix(prop_update$B, nrow = dim(prop_update)[1],ncol = dim(prop_update)[1], byrow = T)))
+  checkdietprop = (imat_update * matrix(prop_update$B, nrow = dim(prop_update)[1], ncol = dim(prop_update)[1],byrow = TRUE)/rowSums(imat_update * matrix(prop_update$B, nrow = dim(prop_update)[1],ncol = dim(prop_update)[1], byrow = TRUE)))
   checkdietprop[is.na(checkdietprop)] = 0
 
   if(!all.equal(checkdietprop, dietprop2)){

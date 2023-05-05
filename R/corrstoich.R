@@ -5,12 +5,12 @@
 #' @return The modified community with new production efficiency.
 productionadj = function(usin,immobilizationlimit = Inf
 ){
-  temp0 = comana(usin, shuffleTL = F)
+  temp0 = comana(usin, shuffleTL = FALSE)
   FMAT = temp0$fmat
   NMIN = sum(temp0$Nminmat)
   Nnodes = dim(FMAT)[1]
   CNj = usin$prop$CN
-  CNi = matrix(usin$prop$CN, ncol = Nnodes, nrow = Nnodes, byrow = T)
+  CNi = matrix(usin$prop$CN, ncol = Nnodes, nrow = Nnodes, byrow = TRUE)
   aj = usin$prop$a
 
   if(-NMIN > immobilizationlimit){
@@ -35,13 +35,13 @@ productionadj = function(usin,immobilizationlimit = Inf
     # Identify the species that can immobilize and sort by TL:
     species = which(
       usin$prop$canIMM == 1,
-      arr.ind = T)
+      arr.ind = TRUE)
 
     TLs = TLcheddar(usin$imat)
     species = species[order(TLs[species])]
 
     for(sp in species){
-      FMAT = comana(usin, shuffleTL = F)$fmat # calculate fmat
+      FMAT = comana(usin, shuffleTL = FALSE)$fmat # calculate fmat
       Mj = sum(FMAT[,sp])
       Bj = usin$prop$B[sp]
       dj = usin$prop$d[sp]
@@ -84,7 +84,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
   #Identify the species that need correction
   AIJ = Aijfcn(usin)
   species = which(
-    rowSums(comana(usin, shuffleTL = F)$Nminmat) < 0 & # Species must have negative Nmin rate
+    rowSums(comana(usin, shuffleTL = FALSE)$Nminmat) < 0 & # Species must have negative Nmin rate
       apply(AIJ,1, max) > 0 & # Species must have a food item that gives them a positive nitrogen balance
       apply(usin$imat > 0, 1, sum) > 1 & # Species must have more than one food item
       !usin$prop$canIMM == 1 # The species is not flagged as a species that can immobilize N
@@ -92,7 +92,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
 
   for(sp in species){
 
-    while(T){
+    while(TRUE){
       food = usin$imat[sp,] > 0
       ai = AIJ[sp,food]
       biomass = usin$prop$B[food]
@@ -178,7 +178,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
 #' corrstoich(intro_comm, dietlimits = DL)
 #' @export
 corrstoich <- function(usin,
-                       forceProd = F,
+                       forceProd = FALSE,
                        dietlimits = c(NA),
                        Immobilizationlimit = Inf
 ){

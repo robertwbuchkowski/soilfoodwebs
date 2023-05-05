@@ -21,7 +21,7 @@
 #' # Basic example for the introductory community:
 #' parameter_uncertainty(intro_comm)
 #' @export
-parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = F, returnresults = T, rejectnegconsump = T, correctstoich = T, verbose = T){
+parameter_uncertainty <- function(usin, parameters = c("B"), replacetiny = 0.000001, distribution = "gamma", errormeasure = 0.2, errortype = "CV", fcntorun = "comana", replicates = 100, returnprops = FALSE, returnresults = TRUE, rejectnegconsump = TRUE, correctstoich = TRUE, verbose = TRUE){
 
   # Confirm inputs are correct:
   if(!all(errortype %in% c("CV", "Variance", "Min"))) stop("errortype must be either CV or Variance or Min")

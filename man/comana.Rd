@@ -6,21 +6,21 @@
 \usage{
 comana(
   usin,
-  mkplot = F,
+  mkplot = FALSE,
   whattoplot = c("web", "Nmin", "Cmin"),
-  showCN = F,
+  showCN = FALSE,
   BOX.SIZE = 0.1,
   BOX.PROP = 0.3,
   BOX.CEX = 1,
   PLOT.CEX = 1,
   edgepos = c(0.1, 0.9),
   TCK = 0.05,
-  shuffleTL = F,
+  shuffleTL = FALSE,
   prettynames = NA,
   fwdlwdcust = NULL,
-  arrowlog = F,
+  arrowlog = FALSE,
   arrowsizerange = c(0.1, 30),
-  rmzeros = T,
+  rmzeros = TRUE,
   eqmtolerance = NA
 )
 }

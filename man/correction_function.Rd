@@ -12,8 +12,8 @@ correction_function(
   a,
   canIMM,
   dietlimits,
-  diet_correct = T,
-  Conly = F,
+  diet_correct = TRUE,
+  Conly = FALSE,
   Immobilizationlimit = Inf
 )
 }

@@ -117,7 +117,7 @@ feedingmatrix = matrix(c(0,1,1,0,0,
                          0,0,0,0,1,
                          0,0,0,0,0), 
                        dimnames = list(sp_names, sp_names),
-                       ncol = 5, nrow = 5, byrow = T)
+                       ncol = 5, nrow = 5, byrow = TRUE)
 ```
 
 To build the community manually, you combine the two features together into a list with the names `imat` and `prop`.
@@ -165,8 +165,10 @@ ana1$usin
 We can plot the results of the community analysis using the plotting built into the function. Options include the web, nitrogen mineralization, and carbon mineralization. The workhorse for the food web plot is the function `diagram::plotmat`, so check there to understand the options.
 ```{r, fig.dim = c(6,6)}
 # Produce a plot if you want
+old.par <- par(no.readonly = TRUE)
 par(mfrow = c(2,2), mar = c(4,4,2,2))
 ana1 <- comana(our_comm, mkplot = T, BOX.SIZE = 0.15, BOX.CEX = 0.7, edgepos = c(0.15, 0.85))
+par(old.par)
 ```
 
 ## Parameter uncertainty

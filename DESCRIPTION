@@ -4,12 +4,14 @@ Title: Soil Food Web Analysis
 Version: 1.0.0
 Authors@R: c(person("Robert","Buchkowski", email = "robert.buchkowski@gmail.com",role = c("aut", "cre", "cph")),person("Zoë", "Lindo",role = c("aut")),person("Carlos", "Barreto",role = c("aut")))
 Maintainer: Robert Buchkowski <robert.buchkowski@gmail.com>
-Description: Analyzing soil food webs or any food web 
-    measured at equilibrium. The package calculates carbon and nitrogen 
-    fluxes and stability properties. The package can also
-    manipulate the structure of the food web by adding, removing, and
-    combining species. Finally, it can simulate food webs away from 
-    equilibrium and run decomposition experiments.
+Description: Analyzing soil food webs or any food web measured at equilibrium. The package
+  calculates carbon and nitrogen fluxes and stability properties using methods
+  described by Hunt et al. (1987) <doi:10.1007/BF00260580>, de Ruiter et al. 
+  (1995) <doi:10.1126/science.269.5228.1257>, Holtkamp et al. (2011)
+  <doi:10.1016/j.soilbio.2010.10.004>, and Buchkowski and Lindo (2021) 
+  <doi:10.1111/1365-2435.13706>. The package can also manipulate the structure 
+  of the food web as well as simulate food webs away from equilibrium and run 
+  decomposition experiments.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

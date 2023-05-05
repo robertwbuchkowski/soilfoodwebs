@@ -7,14 +7,14 @@
 getPARAMS(
   usin,
   DIETLIMTS = NA,
-  diet_correct = T,
-  Conly = F,
+  diet_correct = TRUE,
+  Conly = FALSE,
   userdefinedinputs = NA,
-  returnCNmin = F,
-  has_inorganic_nitrogen = F,
+  returnCNmin = FALSE,
+  has_inorganic_nitrogen = FALSE,
   densitydependence = NA,
   inorganic_nitrogen_properties = list(INN = NA, q = NA, eqmN = NA),
-  verbose = T,
+  verbose = TRUE,
   Immbolizationlimit = Inf
 )
 }

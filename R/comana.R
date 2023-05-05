@@ -23,26 +23,26 @@
 #' @export
 
 comana <- function(usin,
-                   mkplot = F,
+                   mkplot = FALSE,
                    whattoplot = c("web","Nmin","Cmin"),
-                   showCN = F,
+                   showCN = FALSE,
                    BOX.SIZE = 0.1,
                    BOX.PROP = 0.3,
                    BOX.CEX = 1,
                    PLOT.CEX = 1,
                    edgepos = c(0.1, 0.9),
                    TCK = 0.05,
-                   shuffleTL = F,
+                   shuffleTL = FALSE,
                    prettynames = NA,
                    fwdlwdcust = NULL,
-                   arrowlog = F,
+                   arrowlog = FALSE,
                    arrowsizerange = c(0.1,30),
-                   rmzeros = T,
+                   rmzeros = TRUE,
                    eqmtolerance = NA
 ){
 
   # Check the community:
-  usin = checkcomm(usin, shuffleTL = shuffleTL, rmzeros =rmzeros, verbose = F)
+  usin = checkcomm(usin, shuffleTL = shuffleTL, rmzeros =rmzeros, verbose = FALSE)
 
   imat = usin$imat # row values of imat sets predator feeding preferences!
   prop = usin$prop # properties of each trophic species
@@ -71,7 +71,7 @@ comana <- function(usin,
   names(consumption) = colnames(imat) # Names match the trophic species names
 
   # Create a new matrix for feeding rates with the same dimensions as the food web matrix
-  fmat = (imat*matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow=T)/rowSums(imat*matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow=T)))*consumption
+  fmat = (imat*matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow=TRUE)/rowSums(imat*matrix(prop$B, nrow = Nnodes, ncol = Nnodes, byrow=TRUE)))*consumption
 
   fmat[!is.finite(fmat)] = 0 # Replace NaN with 0 for no feeding
 
@@ -91,7 +91,7 @@ comana <- function(usin,
   Nmin = (matrix(1/prop$CN, nrow = Nnodes, ncol = Nnodes, byrow = T) - matrix(prop$p/prop$CN, nrow=Nnodes, ncol = Nnodes))*matrix(prop$a, nrow=Nnodes, ncol = Nnodes)*fmat
 
   # Calculate the nitrogen flux throughout the matrix as the amount leaving a node including the N that will be mineralized.
-  Nfmat = matrix(1/prop$CN, nrow = Nnodes, ncol = Nnodes, byrow = T)*fmat
+  Nfmat = matrix(1/prop$CN, nrow = Nnodes, ncol = Nnodes, byrow = TRUE)*fmat
 
   # Make the plot if necessary
   if(mkplot){

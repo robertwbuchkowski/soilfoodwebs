@@ -4,7 +4,12 @@
 \alias{corrstoich}
 \title{Correct stoichiometry}
 \usage{
-corrstoich(usin, forceProd = F, dietlimits = c(NA), Immobilizationlimit = Inf)
+corrstoich(
+  usin,
+  forceProd = FALSE,
+  dietlimits = c(NA),
+  Immobilizationlimit = Inf
+)
 }
 \arguments{
 \item{usin}{# Community in which to correct stoichiometry.}

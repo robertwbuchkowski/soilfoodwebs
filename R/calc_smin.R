@@ -14,25 +14,25 @@ calc_smin <- function(usin){
 
   # Start the calculations:
   Smin = 1 # Set the starting value for Smin at 1
-  stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
+  stabval = calculate_smin(SMIN = Smin, usin, isSQR = FALSE)
 
   # Increase Smin until the community is stable
   while(stabval >= 0){
     Smin = Smin*10
-    stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
+    stabval = calculate_smin(SMIN = Smin, usin, isSQR = FALSE)
 
   }
 
   # Decrease Smin until the community becomes unstable
   while(stabval < 0){
     Smin = Smin/10
-    stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
+    stabval = calculate_smin(SMIN = Smin, usin, isSQR = FALSE)
   }
 
   # Increase Smin again until it is stable, this is the final step
   while(stabval >=0){
     Smin = Smin+Smin
-    stabval = calculate_smin(SMIN = Smin, usin, isSQR = F)
+    stabval = calculate_smin(SMIN = Smin, usin, isSQR = FALSE)
   }
   return(Smin)
 }
@@ -43,7 +43,7 @@ calc_smin <- function(usin){
 #' @param usin The community used in the calculation
 #' @param isSQR Boolean: Should the rmax value be squared?
 #' @return The value of rmax for the community and given SMIN
-calculate_smin <- function(SMIN = 1, usin, isSQR = T){
+calculate_smin <- function(SMIN = 1, usin, isSQR = TRUE){
   if(isSQR){
     (stability(usin, method = "Moorecobian", smin = SMIN)$rmax*1e4)^2
   }else{

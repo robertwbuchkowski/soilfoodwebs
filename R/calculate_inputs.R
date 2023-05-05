@@ -13,10 +13,10 @@
 #' @export
 calculate_inputs <- function(usin,
                              DIETLIMTS = NA,
-                             diet_correct = T,
-                             Conly = F,
-                             verbose = T,
-                             toround = T
+                             diet_correct = TRUE,
+                             Conly = FALSE,
+                             verbose = TRUE,
+                             toround = TRUE
 ){
 
   # Get the parameter values for the model and the mineralization rates of carbon and nitrogen
@@ -24,7 +24,7 @@ calculate_inputs <- function(usin,
                     DIETLIMTS = DIETLIMTS,
                     diet_correct = diet_correct,
                     Conly = Conly,
-                    returnCNmin = T)
+                    returnCNmin = TRUE)
 
   Cmin = parEI$Cmin # Save the carbon mineralization rate
   Nmin = parEI$Nmin # Save the nitrogen mienralization rate

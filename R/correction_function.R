@@ -15,12 +15,12 @@
 #' @details
 #' This function takes inputs from the ODE and outputs corrected consumption rates.
 #' The key difference from 'corrstoich' is that the prey DO NOT correct their feeding rates to compensate for higher consumption from the predators, so the system can leave equilibrium if a diet shift occurs.
-correction_function <- function(biomasses, cij, CN, p, a, canIMM, dietlimits,diet_correct = T, Conly = F, Immobilizationlimit = Inf){
+correction_function <- function(biomasses, cij, CN, p, a, canIMM, dietlimits,diet_correct = TRUE, Conly = FALSE, Immobilizationlimit = Inf){
 
   Nnodes = length(biomasses) # The number of nodes in the community
 
   Bpred = matrix(biomasses, ncol = Nnodes, nrow = Nnodes) # A matrix of predators
-  Bprey = matrix(biomasses, ncol = Nnodes, nrow = Nnodes, byrow = T) # A matirx of prey
+  Bprey = matrix(biomasses, ncol = Nnodes, nrow = Nnodes, byrow = TRUE) # A matirx of prey
 
   # **Non-equilibrium** consumption matrix
   FMAT = cij*Bpred*Bprey
@@ -28,7 +28,7 @@ correction_function <- function(biomasses, cij, CN, p, a, canIMM, dietlimits,die
   Nnodes = dim(FMAT)[1]
   FMAT2 = FMAT
   FMAT2[FMAT2>0] = 1
-  aij = (matrix(1/CN, nrow = Nnodes, ncol = Nnodes, byrow = T) - matrix(p/CN, nrow=Nnodes, ncol = Nnodes))*matrix(a, nrow=Nnodes, ncol = Nnodes)*FMAT2
+  aij = (matrix(1/CN, nrow = Nnodes, ncol = Nnodes, byrow = TRUE) - matrix(p/CN, nrow=Nnodes, ncol = Nnodes))*matrix(a, nrow=Nnodes, ncol = Nnodes)*FMAT2
 
   if(!Conly){
     if(diet_correct){
@@ -80,7 +80,7 @@ correction_function <- function(biomasses, cij, CN, p, a, canIMM, dietlimits,die
 
     # Modify the production efficiency:
     CNj = CN
-    CNi = matrix(CN, ncol = Nnodes, nrow = Nnodes, byrow = T)
+    CNi = matrix(CN, ncol = Nnodes, nrow = Nnodes, byrow = TRUE)
 
     # If Immobilization limit is infinity then you don't need to correct the production efficiency of immobilizing species
     if(is.infinite(Immobilizationlimit)){
