@@ -301,6 +301,7 @@ res$p1col = palette.colors(10, "Polychrome 36")[res$p1*10]
 res$p2col = palette.colors(10, "Polychrome 36")[res$p2*10]
 
 # Plot the results
+old.par <- par(no.readonly = TRUE)
 par(mfrow = c(2,2))
 plot(Cmin~p1, data = res, col = p2col, xlab = "Prod. eff. Fungi 1", pch = 19)
 abline(h = sum(comana(corrstoich(intro_comm))$Cmin), lty = 2)
@@ -315,6 +316,7 @@ plot.new()
 legend("topright", legend = seq(0.1, 1, by = 0.1), 
        col = palette.colors(10, "Polychrome 36"),
        pch = 19, cex = 0.5, title = "Production efficiency scale", ncol = 2, xpd = T)
+par(old.par)
 ```
 
 The results above demonstrate that a single measure of carbon mineralization (Cmin) or nitrogen mineralization(Nmin) is not sufficient to fit two food web parameters like microbial production efficiency (x-axis and color in top two figures) because multiple combinations can produce the true value (dashed lines).
@@ -455,6 +457,7 @@ sim2 <- CNsim(our_comm, start_mod = c(0.8,1,1,1,1))
 sim3 <- CNsim(our_comm, start_mod = c(0.8,1,1,1,1), densitydependence = c(1,0,0,0,0))
 
 # Plot the results:
+old.par <- par(no.readonly = TRUE)
 par(mfrow= c(2,2), mar = c(5,4,2,2))
 plot(Predator_Carbon~Day, data = sim2, type = "l", col = "blue")
 points(Predator_Carbon~Day, data = sim3, type = "l", col = "orange")
@@ -472,6 +475,7 @@ plot(Microbe_Carbon~Day, data = sim2, type = "l", col = "blue")
 points(Microbe_Carbon~Day, data = sim3, type = "l", col = "orange")
 points(Microbe_Carbon~Day, data = sim1, type = "l")
 legend("bottomright", legend = c("Base", "80% predator", "w/ density-dependence"), col = c("black", "blue", "orange"), lty = 1)
+par(old.par)
 ```
 
 # Decomposition constant
