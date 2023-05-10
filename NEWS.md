@@ -1,3 +1,3 @@
 # soilfoodwebs 1.0.2
 
-* Added a `NEWS.md` file to track changes to the package.
+* Soil food webs original release May 2023
