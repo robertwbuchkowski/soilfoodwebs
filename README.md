@@ -4,6 +4,9 @@
 # soilfoodwebs
 
 <!-- badges: start -->
+
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/soilfoodwebs)](https://cran.r-project.org/package=soilfoodwebs)
+[![R-CMD-check](https://github.com/robertwbuchkowski/soilfoodwebs/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/robertwbuchkowski/soilfoodwebs/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The purpose of the `soilfoodwebs` package is to help analyze and
@@ -64,12 +67,13 @@ each species.
 ``` r
 # Carbon mineralization:
 ana1$Cmin
-#>   Predator      Orib2      Orib1     Fungi1     Fungi2  Detritus1  Detritus2 
-#>     2.8704     9.5250    40.5350 20081.9528 19970.4067     0.0000     0.0000
+#>   Predator      Orib1      Orib2     Fungi1     Fungi2  Detritus1  Detritus2 
+#>     2.8704    40.5350     9.5250 20081.9528 19970.4067     0.0000     0.0000
+
 # Nitrogen mineralization:
 ana1$Nmin
-#>      Predator         Orib2         Orib1        Fungi1        Fungi2 
-#>  5.510821e-01  5.941428e-17 -3.174544e-16  1.195354e+02  4.754859e+02 
+#>      Predator         Orib1         Orib2        Fungi1        Fungi2 
+#>  5.510821e-01 -2.914335e-16  8.413409e-17  1.195354e+02  4.754859e+02 
 #>     Detritus1     Detritus2 
 #>  0.000000e+00  0.000000e+00
 ```
